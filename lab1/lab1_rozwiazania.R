@@ -76,7 +76,9 @@ plik
 min(plik$normal)
 max(plik$normal)
 
-summary(plik)
+plik["wiek"] <- sapply(plik["wiek"], as.numeric)
+
+as.numeric(gsub('.*:', '', summary(plik["wiek"])[4]))
 
 # ZADANIE 4
 
