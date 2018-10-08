@@ -27,7 +27,8 @@ load(".RData")
 # ZADANIE 2
 
 getwd()
-setwd("/home/LABPK/mmazepa/Pulpit/io/lab1")
+#setwd("/home/LABPK/mmazepa/Pulpit/io/lab1")
+setwd("/home/mariusz/Pulpit/io/lab1")
 
 plik <- read.csv("osoby.csv", stringsAsFactors = FALSE)
 plik
@@ -78,4 +79,23 @@ max(plik$normal)
 summary(plik)
 
 # ZADANIE 4
+
+normalize <- function(input)
+{
+  return(norm(input))
+}
+
+standarize <- function(input)
+{
+  return(stand(input))
+}
+
+wektor1 <- c(1, 2, 3)
+wektor2 <- c(5, 7, 6, 4, 10)
+
+normalize(wektor1)
+normalize(wektor2)
+standarize(wektor1)
+standarize(wektor2)
+
 # -----------------------------------------------------------------------
