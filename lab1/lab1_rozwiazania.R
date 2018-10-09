@@ -1,4 +1,4 @@
-# LABORATORIUM 1
+# LABORATORIUM 1 [02.10.2018]
 # -----------------------------------------------------------------------
 
 # ZADANIE 1
@@ -27,8 +27,8 @@ load(".RData")
 # ZADANIE 2
 
 getwd()
-#setwd("/home/LABPK/mmazepa/Pulpit/io/lab1")
-setwd("/home/mariusz/Pulpit/io/lab1")
+setwd("/home/LABPK/mmazepa/Pulpit/io/lab1")
+#setwd("/home/mariusz/Pulpit/io/lab1")
 
 plik <- read.csv("osoby.csv", stringsAsFactors = FALSE)
 plik
@@ -41,11 +41,12 @@ write.csv(mezczyzni, "osoby2.csv")
 
 # ZADANIE 3
 
-plik["wyplata"] <- c(2000.01, 2500.02, 3000.03, 3500.04, 4000.05, 4500.06, 5000.07)
+plik["wyplata"] <- c(round(runif(1:7, 2000, 5000), digits=2))
 plik
 
-nowy <- c("Kowalski", "Jan", "m", 37, 3750.24)
+nowy <- data.frame(imie="Jan", nazwisko="Kowalski", "m", 37, round(runif(1, 2000, 5000), digits=2))
 plik <- rbind(plik, nowy)
+#jakiś błąd w rbind(...) - zastanowić się nad nim!!!
 
 pensje <- as.numeric(plik$wyplata)
 srednia <- mean(pensje)
