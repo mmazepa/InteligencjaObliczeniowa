@@ -85,7 +85,8 @@ fitnessFunc5 <- function(chr)
   else
     return(-calkowita_wartosc_chr)
 }
-
+duzyPlecakGenAlg0 <- system.time(rbga.bin(size = 30, popSize = 200, iters = 100,
+                             mutationChance = 0.03, elitism = T, evalFunc = fitnessFunc2))
 duzyPlecakGenAlg1 <- system.time(rbga.bin(size = 60, popSize = 200, iters = 100,
                              mutationChance = 0.03, elitism = T, evalFunc = fitnessFunc3))
 duzyPlecakGenAlg2 <- system.time(rbga.bin(size = 120, popSize = 200, iters = 100,
@@ -93,10 +94,11 @@ duzyPlecakGenAlg2 <- system.time(rbga.bin(size = 120, popSize = 200, iters = 100
 duzyPlecakGenAlg3 <- system.time(rbga.bin(size = 200, popSize = 200, iters = 100,
                              mutationChance = 0.03, elitism = T, evalFunc = fitnessFunc5))
 
-czasy <- c(duzyPlecakGenAlg1[["elapsed"]][1],
+czasy <- c(duzyPlecakGenAlg0[["elapsed"]][1],
+           duzyPlecakGenAlg1[["elapsed"]][1],
            duzyPlecakGenAlg2[["elapsed"]][1],
            duzyPlecakGenAlg3[["elapsed"]][1])
-rozmiary <- c(60, 120, 200)
+rozmiary <- c(30, 60, 120, 200)
 
 plot(rozmiary, czasy, type="o", main="Działanie Alg. Genetycznego 2",
      xlab="Długość chromosomu", ylab="Czas trwania obliczeń",
