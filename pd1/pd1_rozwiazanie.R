@@ -10,6 +10,7 @@
 #install.packages("genalg")                  # instalacja paczki "genalg"
 #library(genalg)                             # wybranie paczki "genalg"
 
+# funkcja fitness: 7 formuł, 3 zmienne
 fitnessFunc <- function(chr)
 {
   # budowanie formuły
@@ -63,23 +64,5 @@ lines(chartData$srednia, col="blue")
 
 legend("bottomright", c("srednia", "maksymalnie"),
        lty=c(1,1), col=c("blue", "red"), title = "legenda")
-# ------------------------------------------------------------------------
-myPath <- "C:/Users/Mariusz/Desktop/IO/Laboratorium/pd1/src/cnf_files/uf20-91"
-data <- readLines(con = paste(myPath, "/uf20-01.cnf", sep="/"))
-data <- data[9:99]
-data[1] <- substring(data[1], 2)
-for (i in 1:91) data[i] <- strsplit(as.character(data[i]), split=" ")
 
-len = sapply(data, length)
-len = 2 - len
-data = data.frame(mapply( function(x,y) c( x ), data, len))
-
-chromosomes <- c()
-evaluation <- c()
-for (i in 1:91)
-{
-  x <- as.numeric(levels(droplevels(data[[i]])))
-  chromosomes[i] <- x
-  evaluation[i] <- fitnessFunc(x)
-}
 # ------------------------------------------------------------------------
