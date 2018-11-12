@@ -27,8 +27,11 @@ knn.3 <- knn(iris.norm.training[,1:4], iris.norm.test[,1:4],
 
 predicted <- knn.3
 real <- iris.norm.test[,5]
-conf.matrix <-  table(predicted,real)
+conf.matrix <- table(predicted,real)
 accuracy <- sum(diag(conf.matrix))/sum(conf.matrix)
+
+conf.matrix
+accuracy
 
 # ___ ZADANIE 2 __________________________________________________________
 
@@ -50,12 +53,12 @@ P.buys.no = 3/8
 
 P.ageGt40buys.yes = 3/5
 P.ageLt40buys.no = 1/3
-P.incomeMediumbuys.yes = 2/5
-P.incomeMediumbuys.no = 1/3
+P.incomeLowbuys.yes = 2/5
+P.incomeLowbuys.no = 1/3
 P.studentNobuys.yes = 1/5 
 P.studentNobuys.no = 2/3
-P.creditrateExcellentbuys.yes = 3/5
-P.creditrateExcellentbuys.no = 1/3
+P.creditrateFairbuys.yes = 3/5
+P.creditrateFairbuys.no = 1/3
 
 P.Xbuys.yes = (3/5) * (2/5) * (1/5) * (3/5)
 P.Xbuys.no = (1/3) * (1/3) * (2/3) * (1/3)
@@ -79,8 +82,6 @@ pcBuy <- data.frame("Age" = c("31-40", ">40", ">40", ">40", "31-40", "<=30", "<=
            "CreditRating" = c("Fair", "Fair", "Excellent", "Excellent", "Excellent", "Fair", "Fair"),
            "Buys" = c("Yes", "Yes", "Yes", "No", "Yes", "No", "No"))
 pcBuy
-
-# ------------------------------------------------------------------------
 
 checkIfBuys <- function(age, income, student, creditRating)
 {
@@ -128,5 +129,34 @@ pcBuy
 
 pcBuy <- checkIfBuys(">40", "Low", "No", "Fair")
 pcBuy
+
+# ___ ZADANIE 3 __________________________________________________________
+
+#install.packages("e1071")
+#library("e1071")
+
+set.seed(1234)
+ind2 <- sample(2, nrow(iris), replace=TRUE, prob=c(0.67, 0.33))
+iris.norm.training2 <- iris[ind2==1,1:5]
+iris.norm.test2 <- iris[ind2==2,1:5]
+
+iris.bayes = naiveBayes(iris.norm.training2[,1:4],iris.norm.training2[,5])
+
+predicted2 <- predict(iris.bayes, iris.norm.test[,1:4])
+real2 <- iris.norm.test[,5]
+conf.matrix2 <- table(predicted2,real2)
+accuracy2 <- sum(diag(conf.matrix2))/sum(conf.matrix2)
+
+conf.matrix2
+accuracy2
+
+accuracyComparison <- c("kNN (k=3)" = accuracy, "NaiveBayes" = accuracy2)
+
+if (accuracyComparison[1] > accuracyComparison[2])
+{
+  paste("kNN (k=3), accuracy =", accuracyComparison[1])
+} else {
+  paste("NaiveBayes, accuracy =", accuracyComparison[2])
+}
 
 # ------------------------------------------------------------------------
