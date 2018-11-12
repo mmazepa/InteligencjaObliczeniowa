@@ -45,25 +45,88 @@ accuracy <- sum(diag(conf.matrix))/sum(conf.matrix)
 # -----------------------------------------------
 # >40   | low    | no      | fair          | ???
 
-Pbuys.yes = 5/8
-Pbuys.no = 3/8
+P.buys.yes = 5/8
+P.buys.no = 3/8
 
-PageGt40buys.yes = 3/5
-PageLt40buys.no = 1/3
-PincomeMediumbuys.yes = 2/5
-PincomeMediumbuys.no = 1/3
-PstudentNobuys.yes = 1/5 
-PstudentNobuys.no = 2/3
-PcreditrateExcellentbuys.yes = 3/5
-PcreditrateExcellentbuys.no = 1/3
+P.ageGt40buys.yes = 3/5
+P.ageLt40buys.no = 1/3
+P.incomeMediumbuys.yes = 2/5
+P.incomeMediumbuys.no = 1/3
+P.studentNobuys.yes = 1/5 
+P.studentNobuys.no = 2/3
+P.creditrateExcellentbuys.yes = 3/5
+P.creditrateExcellentbuys.no = 1/3
 
-PXbuys.yes = (3/5) * (2/5) * (1/5) * (3/5)
-PXbuys.no = (1/3) * (1/3) * (2/3) * (1/3)
+P.Xbuys.yes = (3/5) * (2/5) * (1/5) * (3/5)
+P.Xbuys.no = (1/3) * (1/3) * (2/3) * (1/3)
 
-Pbuys.yesX = PXbuys.yes * Pbuys.yes
-Pbuys.noX = PXbuys.no * Pbuys.no
+P.buys.yesX = P.Xbuys.yes * P.buys.yes
+P.buys.noX = P.Xbuys.no * P.buys.no
 
-Pbuys.yesX > Pbuys.noX
-print("Nasz rekord Y przyjmuje klasê 'yes'!")
+if (P.buys.yesX > P.buys.noX)
+{
+  print("Nasz rekord przyjmuje klasê 'Yes'!")
+} else if (P.buys.yesX < P.buys.noX)
+{
+  print("Nasz rekord przyjmuje klasê 'No'!")
+}
+
+# ------------------------------------------------------------------------
+
+pcBuy <- data.frame("Age" = c("31-40", ">40", ">40", ">40", "31-40", "<=30", "<=30"),
+           "Income" = c("High", "Medium", "High", "Low", "Low", "Medium", "Low"),
+           "Student" = c("No", "No", "Yes", "Yes", "No", "No", "Yes"),
+           "CreditRating" = c("Fair", "Fair", "Excellent", "Excellent", "Excellent", "Fair", "Fair"),
+           "Buys" = c("Yes", "Yes", "Yes", "No", "Yes", "No", "No"))
+pcBuy
+
+# ------------------------------------------------------------------------
+
+checkIfBuys <- function(age, income, student, creditRating)
+{
+  stopifnot (age %in% c("<=30", "31-40", ">40"))
+  stopifnot (income %in% c("Low", "Medium", "High"))
+  stopifnot (student %in% c("Yes", "No"))
+  stopifnot (creditRating %in% c("Fair", "Excellent"))
+  
+  P.buys.yes = nrow(subset(pcBuy, pcBuy["Buys"] == "Yes")) / nrow(pcBuy)
+  P.buys.no = nrow(subset(pcBuy, pcBuy["Buys"] == "No")) / nrow(pcBuy)
+  
+  P.ageBuys.yes = nrow(subset(pcBuy, pcBuy["Age"] == age & pcBuy["Buys"] == "Yes")) / nrow(subset(pcBuy, pcBuy["Buys"] == "Yes"))
+  P.ageBuys.no = nrow(subset(pcBuy, pcBuy["Age"] == age & pcBuy["Buys"] == "No")) / nrow(subset(pcBuy, pcBuy["Buys"] == "No"))
+  
+  P.incomeBuys.yes = nrow(subset(pcBuy, pcBuy["Income"] == income & pcBuy["Buys"] == "Yes")) / nrow(subset(pcBuy, pcBuy["Buys"] == "Yes"))
+  P.incomeBuys.no = nrow(subset(pcBuy, pcBuy["Income"] == income & pcBuy["Buys"] == "No")) / nrow(subset(pcBuy, pcBuy["Buys"] == "No"))
+  
+  P.studentBuys.yes = nrow(subset(pcBuy, pcBuy["Student"] == student & pcBuy["Buys"] == "Yes")) / nrow(subset(pcBuy, pcBuy["Buys"] == "Yes"))
+  P.studentBuys.no = nrow(subset(pcBuy, pcBuy["Student"] == student & pcBuy["Buys"] == "No")) / nrow(subset(pcBuy, pcBuy["Buys"] == "No"))
+  
+  P.creditrateBuys.yes = nrow(subset(pcBuy, pcBuy["CreditRating"] == creditRating & pcBuy["Buys"] == "Yes")) / nrow(subset(pcBuy, pcBuy["Buys"] == "Yes"))
+  P.creditrateBuys.no = nrow(subset(pcBuy, pcBuy["CreditRating"] == creditRating & pcBuy["Buys"] == "No")) / nrow(subset(pcBuy, pcBuy["Buys"] == "No"))
+  
+  P.Xbuys.yes = P.ageBuys.yes * P.incomeBuys.yes * P.studentBuys.yes * P.creditrateBuys.yes
+  P.Xbuys.no = P.ageBuys.no * P.incomeBuys.no * P.studentBuys.no * P.creditrateBuys.no
+  
+  P.buys.yesX = P.Xbuys.yes * P.buys.yes
+  P.buys.noX = P.Xbuys.no * P.buys.no
+  
+  if (P.buys.yesX > P.buys.noX)
+  {
+    print("Nasz rekord przyjmuje klasê 'Yes'!")
+    pcBuy <- rbind(pcBuy, data.frame("Age"=age, "Income"=income, "Student"=student, "CreditRating"=creditRating, "Buys"="Yes"))
+  } else if (P.buys.yesX < P.buys.noX)
+  {
+    print("Nasz rekord przyjmuje klasê 'No'!")
+    pcBuy <- rbind(pcBuy, data.frame("Age"=age, "Income"=income, "Student"=student, "CreditRating"=creditRating, "Buys"="No"))
+  }
+
+  return(pcBuy)
+}
+
+pcBuy <- checkIfBuys(">40", "Medium", "No", "Excellent")
+pcBuy
+
+pcBuy <- checkIfBuys(">40", "Low", "No", "Fair")
+pcBuy
 
 # ------------------------------------------------------------------------
