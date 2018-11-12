@@ -8,16 +8,16 @@ norm <- function(x)
 {
   (x-min(x))/(max(x)-min(x))
 }
-iris.data.norm <- c(norm(iris.data[1]), norm(iris.data[2]),
-                    norm(iris.data[3]), norm(iris.data[4]))
+iris.data.norm <- data.frame(norm(iris.data[1]), norm(iris.data[2]),
+                    norm(iris.data[3]), norm(iris.data[4]), iris.data[5])
 
 #install.packages("party")
 #library("party")
 
 set.seed(1234)
 ind <- sample(2, nrow(iris), replace=TRUE, prob=c(0.67, 0.33))
-iris.norm.training <- iris[ind==1,1:5]
-iris.norm.test <- iris[ind==2,1:5]
+iris.norm.training <- iris.data.norm[ind==1,1:5]
+iris.norm.test <- iris.data.norm[ind==2,1:5]
 
 #install.packages("class")
 #library("class")
@@ -137,8 +137,8 @@ pcBuy
 
 set.seed(1234)
 ind2 <- sample(2, nrow(iris), replace=TRUE, prob=c(0.67, 0.33))
-iris.norm.training2 <- iris[ind2==1,1:5]
-iris.norm.test2 <- iris[ind2==2,1:5]
+iris.norm.training2 <- iris.data.norm[ind2==1,1:5]
+iris.norm.test2 <- iris.data.norm[ind2==2,1:5]
 
 iris.bayes = naiveBayes(iris.norm.training2[,1:4],iris.norm.training2[,5])
 
@@ -154,9 +154,11 @@ accuracyComparison <- c("kNN (k=3)" = accuracy, "NaiveBayes" = accuracy2)
 
 if (accuracyComparison[1] > accuracyComparison[2])
 {
-  paste("kNN (k=3), accuracy =", accuracyComparison[1])
+  paste("kNN (k=3), accuracy =", accuracyComparison[1], "IS BETTER THAN", "NaiveBayes, accuracy =", accuracyComparison[2])
+} else if (accuracyComparison[1] > accuracyComparison[2]) {
+  paste("NaiveBayes, accuracy =", accuracyComparison[2], "IS BETTER THAN", "kNN (k=3), accuracy =", accuracyComparison[1])
 } else {
-  paste("NaiveBayes, accuracy =", accuracyComparison[2])
+  paste("kNN (k=3), accuracy =", accuracyComparison[1], "IS EQUAL", "NaiveBayes, accuracy =", accuracyComparison[2])
 }
 
 # ------------------------------------------------------------------------
