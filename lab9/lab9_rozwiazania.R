@@ -65,7 +65,7 @@ iris.train <- subset(iris.train, select = -c(Species))
 iris.neuralnet <- neuralnet(Setosa + Versicolor + Virginica ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
                             iris.train, hidden=4)
 iris.pred <- compute(iris.neuralnet, iris.test[,1:4])
-#plot(iris.neuralnet)
+plot(iris.neuralnet)
 
 iris.pred_species <- c()
 for (row in 1:nrow(iris.pred$net.result)) {
