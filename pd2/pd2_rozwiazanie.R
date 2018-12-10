@@ -31,48 +31,48 @@ drugs <- setNames(drugs, names)
 # R Studio (and Eclipse + StatET): Highlight the text and use CTRL+SHIFT+C
 # to comment multiple lines in Windows.
 
-# for (i in 1:nrow(drugs)) {
-#   # ----- OBRÓBKA KOLUMNY "AGE" (WIEK) ---------------------------------
-#   if (drugs["age"][i,] == -0.95197) drugs["age"][i,] <- "18-24"
-#   else if (drugs["age"][i,] == -0.07854) drugs["age"][i,] <- "25-34"
-#   else if (drugs["age"][i,] == 0.49788) drugs["age"][i,] <- "35-44"
-#   else if (drugs["age"][i,] == 1.09449) drugs["age"][i,] <- "45-54"
-#   else if (drugs["age"][i,] == 1.82213) drugs["age"][i,] <- "55-64"
-#   else if (drugs["age"][i,] == 2.59171) drugs["age"][i,] <- "65+"
-# 
-#   # ----- OBRÓBKA KOLUMNY "GENDER" (P£EÆ) ------------------------------
-#   if (drugs["gender"][i,] == 0.48246) drugs["gender"][i,] <- "Female"
-#   else if (drugs["gender"][i,] == -0.48246) drugs["gender"][i,] <- "Male"
-# 
-#   # ----- OBRÓBKA KOLUMNY "EDUCATION" (EDUKACJA) -----------------------
-#   if (drugs["education"][i,] == -2.43591) drugs["education"][i,] <- "Left school before 16 years"
-#   else if (drugs["education"][i,] == -1.73790) drugs["education"][i,] <- "Left school at 16 years"
-#   else if (drugs["education"][i,] == -1.43719) drugs["education"][i,] <- "Left school at 17 years"
-#   else if (drugs["education"][i,] == -1.22751) drugs["education"][i,] <- "Left school at 18 years"
-#   else if (drugs["education"][i,] == -0.61113) drugs["education"][i,] <- "Some college or university, no certificate or degree"
-#   else if (drugs["education"][i,] == -0.05921) drugs["education"][i,] <- "Professional certificate/ diploma"
-#   else if (drugs["education"][i,] == 0.45468) drugs["education"][i,] <- "University degree"
-#   else if (drugs["education"][i,] == 1.16365) drugs["education"][i,] <- "Masters degree"
-#   else if (drugs["education"][i,] == 1.98437) drugs["education"][i,] <- "Doctorate degree"
-# 
-#   # ----- OBRÓBKA KOLUMNY "COUNTRY" (KRAJ) -----------------------------
-#   if (drugs["country"][i,] == -0.09765) drugs["country"][i,] <- "Australia"
-#   else if (drugs["country"][i,] == 0.24923) drugs["country"][i,] <- "Canada"
-#   else if (drugs["country"][i,] == -0.46841) drugs["country"][i,] <- "New Zealand"
-#   else if (drugs["country"][i,] == -0.28519) drugs["country"][i,] <- "Other"
-#   else if (drugs["country"][i,] == 0.21128) drugs["country"][i,] <- "Republic of Ireland"
-#   else if (drugs["country"][i,] == 0.96082) drugs["country"][i,] <- "UK"
-#   else if (drugs["country"][i,] == -0.57009) drugs["country"][i,] <- "USA"
-# 
-#   # ----- OBRÓBKA KOLUMNY "ETHNICITY" (NARODOWOŒÆ) ---------------------
-#   if (drugs["ethnicity"][i,] == -0.50212) drugs["ethnicity"][i,] <- "Asian"
-#   else if (drugs["ethnicity"][i,] == -1.10702) drugs["ethnicity"][i,] <- "Black"
-#   else if (drugs["ethnicity"][i,] == 1.90725) drugs["ethnicity"][i,] <- "Mixed-Black/Asian"
-#   else if (drugs["ethnicity"][i,] == 0.12600) drugs["ethnicity"][i,] <- "Mixed-White/Asian"
-#   else if (drugs["ethnicity"][i,] == -0.22166) drugs["ethnicity"][i,] <- "Mixed-White/Black"
-#   else if (drugs["ethnicity"][i,] == 0.11440) drugs["ethnicity"][i,] <- "Other"
-#   else if (drugs["ethnicity"][i,] == -0.31685) drugs["ethnicity"][i,] <- "White"
-# }
+for (i in 1:nrow(drugs)) {
+  # ----- OBRÓBKA KOLUMNY "AGE" (WIEK) ---------------------------------
+  if (drugs["age"][i,] == -0.95197) drugs["age"][i,] <- "18-24"
+  else if (drugs["age"][i,] == -0.07854) drugs["age"][i,] <- "25-34"
+  else if (drugs["age"][i,] == 0.49788) drugs["age"][i,] <- "35-44"
+  else if (drugs["age"][i,] == 1.09449) drugs["age"][i,] <- "45-54"
+  else if (drugs["age"][i,] == 1.82213) drugs["age"][i,] <- "55-64"
+  else if (drugs["age"][i,] == 2.59171) drugs["age"][i,] <- "65+"
+
+  # ----- OBRÓBKA KOLUMNY "GENDER" (P£EÆ) ------------------------------
+  if (drugs["gender"][i,] == 0.48246) drugs["gender"][i,] <- "Female"
+  else if (drugs["gender"][i,] == -0.48246) drugs["gender"][i,] <- "Male"
+
+  # ----- OBRÓBKA KOLUMNY "EDUCATION" (EDUKACJA) -----------------------
+  if (drugs["education"][i,] == -2.43591) drugs["education"][i,] <- "Left school before 16 years"
+  else if (drugs["education"][i,] == -1.73790) drugs["education"][i,] <- "Left school at 16 years"
+  else if (drugs["education"][i,] == -1.43719) drugs["education"][i,] <- "Left school at 17 years"
+  else if (drugs["education"][i,] == -1.22751) drugs["education"][i,] <- "Left school at 18 years"
+  else if (drugs["education"][i,] == -0.61113) drugs["education"][i,] <- "Some college or university, no certificate or degree"
+  else if (drugs["education"][i,] == -0.05921) drugs["education"][i,] <- "Professional certificate/ diploma"
+  else if (drugs["education"][i,] == 0.45468) drugs["education"][i,] <- "University degree"
+  else if (drugs["education"][i,] == 1.16365) drugs["education"][i,] <- "Masters degree"
+  else if (drugs["education"][i,] == 1.98437) drugs["education"][i,] <- "Doctorate degree"
+
+  # ----- OBRÓBKA KOLUMNY "COUNTRY" (KRAJ) -----------------------------
+  if (drugs["country"][i,] == -0.09765) drugs["country"][i,] <- "Australia"
+  else if (drugs["country"][i,] == 0.24923) drugs["country"][i,] <- "Canada"
+  else if (drugs["country"][i,] == -0.46841) drugs["country"][i,] <- "New Zealand"
+  else if (drugs["country"][i,] == -0.28519) drugs["country"][i,] <- "Other"
+  else if (drugs["country"][i,] == 0.21128) drugs["country"][i,] <- "Republic of Ireland"
+  else if (drugs["country"][i,] == 0.96082) drugs["country"][i,] <- "UK"
+  else if (drugs["country"][i,] == -0.57009) drugs["country"][i,] <- "USA"
+
+  # ----- OBRÓBKA KOLUMNY "ETHNICITY" (NARODOWOŒÆ) ---------------------
+  if (drugs["ethnicity"][i,] == -0.50212) drugs["ethnicity"][i,] <- "Asian"
+  else if (drugs["ethnicity"][i,] == -1.10702) drugs["ethnicity"][i,] <- "Black"
+  else if (drugs["ethnicity"][i,] == 1.90725) drugs["ethnicity"][i,] <- "Mixed-Black/Asian"
+  else if (drugs["ethnicity"][i,] == 0.12600) drugs["ethnicity"][i,] <- "Mixed-White/Asian"
+  else if (drugs["ethnicity"][i,] == -0.22166) drugs["ethnicity"][i,] <- "Mixed-White/Black"
+  else if (drugs["ethnicity"][i,] == 0.11440) drugs["ethnicity"][i,] <- "Other"
+  else if (drugs["ethnicity"][i,] == -0.31685) drugs["ethnicity"][i,] <- "White"
+}
 
 # ----- POZBYCIE SIÊ NIEPOTRZEBNYCH DANYCH -------------------------------
 
@@ -96,6 +96,69 @@ for (i in 1:nrow(drugs.alcohol)) {
 drugs.alcohol$alcohol <- drugs.alcohol$alcoholNum
 drugs.alcohol$alcoholNum <- NULL
 
+# ----- WYKRESY ----------------------------------------------------------
+
+#install.packages("plotrix")
+#library(plotrix)
+
+# --- SPO¯YCIE ALKOHOLU W ZALE¯NOŒCI OD P£CI ----
+
+drugsGender <- data.frame("Gender" <- drugs["gender"],
+                          "Class" <- drugs.alcohol["alcohol"])
+
+tabDG <- table(drugsGender)
+round(tabDG/sum(tabDG)*100, 2)
+
+drugsGenderVal <- c(tabDG[1], tabDG[2], tabDG[3], tabDG[4])
+drugsGenderNames <- c("Female Non-user",
+                      "Male Non-user",
+                      "Female user",
+                      "Male user")
+
+pie(drugsGenderVal, labels = drugsGenderNames,
+    col = c("yellow", "green", "orange", "darkgreen"),
+    main="Spo¿ycie alkoholu w zale¿noœci od p³ci")
+
+# --- SPO¯YCIE ALKOHOLU W ZALE¯NOŒCI OD WIEKU ---
+
+drugsAge <- data.frame("Age" <- drugs["age"],
+                       "Class" <- drugs.alcohol["alcohol"])
+
+barplot(t(table(drugsAge)),
+        main="Spo¿ywanie alkoholu w zale¿noœci od wieku",
+        xlab="Przedzia³ wiekowy",
+        ylab="Liczba ludzi")
+
+barplot(table(drugsAge)[,1],
+        main="Niespo¿ywanie alkoholu w zale¿noœci od wieku",
+        xlab="Przedzia³ wiekowy",
+        ylab="Liczba ludzi nieu¿ywaj¹cych alkoholu")
+
+barplot(table(drugsAge)[,2],
+        main="Spo¿ywanie alkoholu w zale¿noœci od wieku",
+        xlab="Przedzia³ wiekowy",
+        ylab="Liczba ludzi u¿ywaj¹cych alkoholu")
+
+# --- SPO¯YCIE ALKOHOLU W ZALE¯NOŒCI OD KRAJU ---
+
+drugsCountry <- data.frame("Country" <- drugs["country"],
+                           "Class" <- drugs.alcohol["alcohol"])
+
+barplot(t(table(drugsCountry)),
+        main="Spo¿ywanie alkoholu w zale¿noœci od kraju",
+        xlab="Kraj",
+        ylab="Liczba ludzi")
+
+barplot(table(drugsCountry)[,1],
+        main="Niespo¿ywanie alkoholu w zale¿noœci od kraju",
+        xlab="Kraj",
+        ylab="Liczba ludzi nieu¿ywaj¹cych alkoholu")
+
+barplot(table(drugsCountry)[,2],
+        main="Spo¿ywanie alkoholu w zale¿noœci od kraju",
+        xlab="Kraj",
+        ylab="Liczba ludzi u¿ywaj¹cych alkoholu")
+
 # ----- NORMALIZACJA DANYCH ----------------------------------------------
 
 norm <- function(x) {
@@ -117,16 +180,17 @@ ind <- sample(2, nrow(drugs.norm), replace=TRUE, prob=c(0.67, 0.33))
 drugs.train <- drugs.norm[ind==1,1:13]
 drugs.test <- drugs.norm[ind==2,1:13]
 
-# ----- KLASYFIKATOR C4.5/ID3 --------------------------------------------
+# ----- KLASYFIKATOR C4.5/ID3 (DRZEWO) -----------------------------------
 
 #install.packages("party")
 #library(party)
 
-drugs.ctree <- ctree(alcohol ~ age + gender + education + country + ethnicity + nscore + escore + oscore + ascore + cscore + impulsive + ss,
-                     data=drugs.train[1:13])
+drugs.ctree <- ctree(alcohol ~ age + gender + education + country + ethnicity
+                     + nscore + escore + oscore + ascore + cscore + impulsive + ss,
+                     data=drugs.train)
 print(drugs.ctree)
-#plot(drugs.ctree)
-#plot(drugs.ctree, type="simple")
+plot(drugs.ctree)
+plot(drugs.ctree, type="simple")
 
 tree.predicted <- predict(drugs.ctree, drugs.test[,1:12])
 tree.real <- drugs.test[,13]
@@ -171,15 +235,18 @@ barplot(c("C4.5/ID3" = tree.accuracy,
 #library(editrules)
 
 drugs.log <- log(drugs.norm[,1:12])
+#drugs.log <- do.call(data.frame, lapply(drugs.log, function(x) replace(x, is.infinite(x), 0)))
+#drugs.log <- do.call(data.frame, lapply(drugs.log, function(x) replace(x, x == 0, 0.5)))
+
 drugs.scale <- scale(drugs.log, center=TRUE)
 drugs.pca <- prcomp(drugs.scale)
 drugs.final <- predict(drugs.pca)
 #drugs.final <- iris.final[,1:2]
 
-iris.kmeans <- kmeans(iris.final, 3)
+drugs.kmeans <- kmeans(drugs.final, 3)
 
-plot(iris.final, col = iris.kmeans[["cluster"]], main="Algorytm grupowania")
-points(iris.kmeans[["centers"]], col = 1:3, pch = 16, cex=1.5)
+plot(drugs.final, col = drugs.kmeans[["cluster"]], main="Algorytm grupowania")
+points(drugs.kmeans[["centers"]], col = 1:3, pch = 16, cex=1.5)
 
 # ----- STATYSTYKI -------------------------------------------------------
 
