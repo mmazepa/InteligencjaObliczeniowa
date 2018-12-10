@@ -74,12 +74,120 @@ drugs <- setNames(drugs, names)
 #   else if (drugs["ethnicity"][i,] == -0.31685) drugs["ethnicity"][i,] <- "White"
 # }
 
+# ----- POZBYCIE SIÊ NIEPOTRZEBNYCH DANYCH -------------------------------
+
+drugs.alcohol <- drugs[c(2:13,14)] # wybranie u¿ywki "alcohol"
+drugs.alcohol$alcoholNum <- NA
+
+# ----- MODYFIKACJA KOLUMNY Z KLAS¥ (WARTOŒCI: 6, MA BYÆ: 2) -------------
+
+for (i in 1:nrow(drugs.alcohol)) {
+  nonuserSet <- c("CL0", "CL1")
+  userSet <- c("CL2", "CL3", "CL4", "CL5", "CL6")
+  if (drugs.alcohol["alcohol"][i,] %in% nonuserSet) {
+    drugs.alcohol["alcohol"][i,] <- "Non-User"
+    drugs.alcohol["alcoholNum"][i,] <- 0
+  } else if (drugs.alcohol["alcohol"][i,] %in% userSet) {
+    drugs.alcohol["alcohol"][i,] <- "User"
+    drugs.alcohol["alcoholNum"][i,] <- 1
+  }
+}
+
+drugs.alcohol$alcohol <- drugs.alcohol$alcoholNum
+drugs.alcohol$alcoholNum <- NULL
+
+# ----- NORMALIZACJA DANYCH ----------------------------------------------
+
+norm <- function(x) {
+  (x-min(x))/(max(x)-min(x))
+}
+
+drugs.norm <- data.frame(norm(drugs.alcohol[1]), norm(drugs.alcohol[2]),
+                         norm(drugs.alcohol[3]), norm(drugs.alcohol[4]),
+                         norm(drugs.alcohol[5]), norm(drugs.alcohol[6]),
+                         norm(drugs.alcohol[7]), norm(drugs.alcohol[8]),
+                         norm(drugs.alcohol[9]), norm(drugs.alcohol[10]),
+                         norm(drugs.alcohol[11]), norm(drugs.alcohol[12]),
+                         drugs.alcohol[13])
+
+# ----- PODZIA£ NA ZBIÓR TESTOWY I TRENINGOWY ----------------------------
+
+set.seed(1234)
+ind <- sample(2, nrow(drugs.norm), replace=TRUE, prob=c(0.67, 0.33))
+drugs.train <- drugs.norm[ind==1,1:13]
+drugs.test <- drugs.norm[ind==2,1:13]
+
+# ----- KLASYFIKATOR C4.5/ID3 --------------------------------------------
+
+#install.packages("party")
+#library(party)
+
+drugs.ctree <- ctree(alcohol ~ age + gender + education + country + ethnicity + nscore + escore + oscore + ascore + cscore + impulsive + ss,
+                     data=drugs.train[1:13])
+print(drugs.ctree)
+#plot(drugs.ctree)
+#plot(drugs.ctree, type="simple")
+
+tree.predicted <- predict(drugs.ctree, drugs.test[,1:12])
+tree.real <- drugs.test[,13]
+tree.conf.matrix <- table(tree.predicted, tree.real)
+tree.accuracy <- sum(diag(tree.conf.matrix))/sum(tree.conf.matrix)
+
+# ----- KLASYFIKATOR KNN -------------------------------------------------
+
+#install.packages("class")
+#library(class)
+
+knn.3 <- knn(drugs.train[,1:12], drugs.test[,1:12], cl=drugs.train[,13], k=3, prob=FALSE)
+
+knn.predicted <- knn.3
+knn.real <- drugs.test[,13]
+knn.conf.matrix <- table(knn.predicted, knn.real)
+knn.accuracy <- sum(diag(knn.conf.matrix))/sum(knn.conf.matrix)
+
+# ----- KLASYFIKATOR NAIVEBAYES ------------------------------------------
+
+#install.packages("e1071")
+#library(e1071)
+
+nbayes = naiveBayes(drugs.train[,1:12], drugs.train[,13])
+
+nbayes.predicted <- predict(nbayes, drugs.test[,1:12])
+nbayes.real <- drugs.test[,13]
+nbayes.conf.matrix <- table(nbayes.predicted, nbayes.real)
+nbayes.accuracy <- sum(diag(nbayes.conf.matrix))/sum(nbayes.conf.matrix)
+
+# ----- WYKRES DOK£ADNOŒCI -----------------------------------------------
+
+barplot(c("C4.5/ID3" = tree.accuracy,
+          "kNN" = knn.accuracy,
+          "NaiveBayes" = 0), # jeszcze jeden inny
+        main="Dok³adnoœci klasyfikatorów",
+        xlab="Klasyfikatory", ylab="Dok³adnoœæ")
+
+# ----- GRUPOWANIE METOD¥ K-ŒREDNICH -------------------------------------
+
+#install.packages("editrules")
+#library(editrules)
+
+drugs.log <- log(drugs.norm[,1:12])
+drugs.scale <- scale(drugs.log, center=TRUE)
+drugs.pca <- prcomp(drugs.scale)
+drugs.final <- predict(drugs.pca)
+#drugs.final <- iris.final[,1:2]
+
+iris.kmeans <- kmeans(iris.final, 3)
+
+plot(iris.final, col = iris.kmeans[["cluster"]], main="Algorytm grupowania")
+points(iris.kmeans[["centers"]], col = 1:3, pch = 16, cex=1.5)
+
 # ----- STATYSTYKI -------------------------------------------------------
 
 statistics <- list("ages" = table(drugs["age"]),
                    "genders" = table(drugs["gender"]),
                    "education" = table(drugs["education"]),
                    "country" = table(drugs["country"]),
-                   "ethnicity" = table(drugs["ethnicity"]))
+                   "ethnicity" = table(drugs["ethnicity"]),
+                   "alcohol" = table(drugs.alcohol["alcohol"]))
 
 # ------------------------------------------------------------------------
