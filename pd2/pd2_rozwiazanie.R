@@ -25,11 +25,9 @@ names <- c("id", "age", "gender", "education", "country", "ethnicity",
            "choc", "coke", "crack", "ecstasy", "heroin", "ketamine", "legalh",
            "lsd", "meth", "mushrooms", "nicotine", "semer", "vsa")
 drugs <- setNames(drugs, names)
+drugs2 <- drugs
 
 # ----- OBRÓBKA BAZY DANYCH ----------------------------------------------
-
-# R Studio (and Eclipse + StatET): Highlight the text and use CTRL+SHIFT+C
-# to comment multiple lines in Windows.
 
 for (i in 1:nrow(drugs)) {
   # ----- OBRÓBKA KOLUMNY "AGE" (WIEK) ---------------------------------
@@ -76,8 +74,9 @@ for (i in 1:nrow(drugs)) {
 
 # ----- POZBYCIE SIÊ NIEPOTRZEBNYCH DANYCH -------------------------------
 
-drugs.alcohol <- drugs[c(2:13,14)] # wybranie u¿ywki "alcohol"
-drugs.alcohol$alcoholNum <- NA
+drugs.alcohol <- drugs2[c(2:13,14)] # wybranie u¿ywki "alcohol"
+drugs.alcohol2 <- drugs.alcohol
+drugs.alcohol2$alcoholNum <- NA
 
 # ----- MODYFIKACJA KOLUMNY Z KLAS¥ (WARTOŒCI: 6, MA BYÆ: 2) -------------
 
@@ -86,15 +85,25 @@ for (i in 1:nrow(drugs.alcohol)) {
   userSet <- c("CL2", "CL3", "CL4", "CL5", "CL6")
   if (drugs.alcohol["alcohol"][i,] %in% nonuserSet) {
     drugs.alcohol["alcohol"][i,] <- "Non-User"
-    drugs.alcohol["alcoholNum"][i,] <- 0
   } else if (drugs.alcohol["alcohol"][i,] %in% userSet) {
     drugs.alcohol["alcohol"][i,] <- "User"
-    drugs.alcohol["alcoholNum"][i,] <- 1
   }
 }
 
-drugs.alcohol$alcohol <- drugs.alcohol$alcoholNum
-drugs.alcohol$alcoholNum <- NULL
+# ----- MODYFIKACJA KOLUMNY Z KLAS¥, WERSJA DLA CTREE --------------------
+
+for (i in 1:nrow(drugs.alcohol2)) {
+  nonuserSet <- c("CL0", "CL1")
+  userSet <- c("CL2", "CL3", "CL4", "CL5", "CL6")
+  if (drugs.alcohol2["alcohol"][i,] %in% nonuserSet) {
+    drugs.alcohol2["alcoholNum"][i,] <- 0
+  } else if (drugs.alcohol2["alcohol"][i,] %in% userSet) {
+    drugs.alcohol2["alcoholNum"][i,] <- 1
+  }
+}
+
+drugs.alcohol2$alcohol <- drugs.alcohol2$alcoholNum
+drugs.alcohol2$alcoholNum <- NULL
 
 # ----- WYKRESY ----------------------------------------------------------
 
@@ -124,6 +133,9 @@ pie(drugsGenderVal, labels = drugsGenderNames,
 drugsAge <- data.frame("Age" <- drugs["age"],
                        "Class" <- drugs.alcohol["alcohol"])
 
+tabDA <- table(drugsAge)
+round(tabDA/sum(tabDA)*100, 2)
+
 barplot(t(table(drugsAge)),
         main="Spo¿ywanie alkoholu w zale¿noœci od wieku",
         xlab="Przedzia³ wiekowy",
@@ -139,10 +151,28 @@ barplot(table(drugsAge)[,2],
         xlab="Przedzia³ wiekowy",
         ylab="Liczba ludzi u¿ywaj¹cych alkoholu")
 
+# --- SPO¯YCIE ALKOHOLU W ZALE¯NOŒCI OD EDUKACJI ---
+
+drugsEducation <- data.frame("Education" <- drugs["education"],
+                             "Class" <- drugs.alcohol["alcohol"])
+
+tabDEdu <- table(drugsEducation)
+round(tabDEdu/sum(tabDEdu)*100, 2)
+
+par(mar=c(5, 20, 5, 1))
+barplot(t(table(drugsEducation)),
+        las=1,
+        main="Spo¿ywanie alkoholu w zale¿noœci od wykszta³cenia",
+        xlab="Liczba ludzi",
+        horiz = TRUE)
+
 # --- SPO¯YCIE ALKOHOLU W ZALE¯NOŒCI OD KRAJU ---
 
 drugsCountry <- data.frame("Country" <- drugs["country"],
                            "Class" <- drugs.alcohol["alcohol"])
+
+tabDC <- table(drugsCountry)
+round(tabDC/sum(tabDC)*100, 2)
 
 barplot(t(table(drugsCountry)),
         main="Spo¿ywanie alkoholu w zale¿noœci od kraju",
@@ -159,6 +189,21 @@ barplot(table(drugsCountry)[,2],
         xlab="Kraj",
         ylab="Liczba ludzi u¿ywaj¹cych alkoholu")
 
+# --- SPO¯YCIE ALKOHOLU W ZALE¯NOŒCI OD NARODOWOŒCI ---
+
+drugsEthnicity <- data.frame("Ethnicity" <- drugs["ethnicity"],
+                           "Class" <- drugs.alcohol["alcohol"])
+
+tabDEth <- table(drugsEthnicity)
+round(tabDEth/sum(tabDEth)*100, 2)
+
+par(mar=c(5, 10, 5, 1))
+barplot(t(table(drugsEthnicity)),
+        las=1,
+        main="Spo¿ywanie alkoholu w zale¿noœci od narodowoœci",
+        xlab="Liczba ludzi",
+        horiz = TRUE)
+
 # ----- NORMALIZACJA DANYCH ----------------------------------------------
 
 norm <- function(x) {
@@ -173,6 +218,14 @@ drugs.norm <- data.frame(norm(drugs.alcohol[1]), norm(drugs.alcohol[2]),
                          norm(drugs.alcohol[11]), norm(drugs.alcohol[12]),
                          drugs.alcohol[13])
 
+drugs.norm2 <- data.frame(norm(drugs.alcohol2[1]), norm(drugs.alcohol2[2]),
+                         norm(drugs.alcohol2[3]), norm(drugs.alcohol2[4]),
+                         norm(drugs.alcohol2[5]), norm(drugs.alcohol2[6]),
+                         norm(drugs.alcohol2[7]), norm(drugs.alcohol2[8]),
+                         norm(drugs.alcohol2[9]), norm(drugs.alcohol2[10]),
+                         norm(drugs.alcohol2[11]), norm(drugs.alcohol2[12]),
+                         drugs.alcohol2[13])
+
 # ----- PODZIA£ NA ZBIÓR TESTOWY I TRENINGOWY ----------------------------
 
 set.seed(1234)
@@ -180,12 +233,19 @@ ind <- sample(2, nrow(drugs.norm), replace=TRUE, prob=c(0.67, 0.33))
 drugs.train <- drugs.norm[ind==1,1:13]
 drugs.test <- drugs.norm[ind==2,1:13]
 
+# ----- PODZIA£ NA ZBIÓR TESTOWY I TRENINGOWY V.2 ------------------------
+
+set.seed(1234)
+ind <- sample(2, nrow(drugs.norm2), replace=TRUE, prob=c(0.67, 0.33))
+drugs.train2 <- drugs.norm2[ind==1,1:13]
+drugs.test2 <- drugs.norm2[ind==2,1:13]
+
 # ----- KLASYFIKATOR C4.5/ID3 (DRZEWO) -----------------------------------
 
 #install.packages("party")
 #library(party)
 
-drugs.ctree <- ctree(alcohol ~ age + gender + education + country + ethnicity
+drugs.ctree <- ctree(factor(alcohol) ~ age + gender + education + country + ethnicity
                      + nscore + escore + oscore + ascore + cscore + impulsive + ss,
                      data=drugs.train)
 print(drugs.ctree)
@@ -214,7 +274,8 @@ knn.accuracy <- sum(diag(knn.conf.matrix))/sum(knn.conf.matrix)
 #install.packages("e1071")
 #library(e1071)
 
-nbayes = naiveBayes(drugs.train[,1:12], drugs.train[,13])
+nbayes <- naiveBayes(drugs.train[,1:12], drugs.train[,13])
+nbayes$levels <- c("Non-user", "User")
 
 nbayes.predicted <- predict(nbayes, drugs.test[,1:12])
 nbayes.real <- drugs.test[,13]
@@ -223,11 +284,46 @@ nbayes.accuracy <- sum(diag(nbayes.conf.matrix))/sum(nbayes.conf.matrix)
 
 # ----- WYKRES DOK£ADNOŒCI -----------------------------------------------
 
-barplot(c("C4.5/ID3" = tree.accuracy,
-          "kNN" = knn.accuracy,
-          "NaiveBayes" = 0), # jeszcze jeden inny
+accuracies <- c("C4.5/ID3 (drzewo)" = tree.accuracy,
+                "kNN" = knn.accuracy,
+                "NaiveBayes" = nbayes.accuracy) # jeszcze jeden inny
+accuracyPlot <- barplot(accuracies,
         main="Dok³adnoœci klasyfikatorów",
-        xlab="Klasyfikatory", ylab="Dok³adnoœæ")
+        xlab="Klasyfikator", ylab="Dok³adnoœæ klasyfikatora")
+text(x = accuracyPlot, y = accuracies, label = round(accuracies,5),
+     pos = 1, cex = 0.8, col = "navy")
+
+# ----- PARY (TPR, FPR) --------------------------------------------------
+
+# TPR = TP/(TP+FN)
+# FPR = FP/(FP+TN)
+
+tree.tpr <- tree.conf.matrix[1]/(tree.conf.matrix[1] + tree.conf.matrix[2])
+tree.fpr <- tree.conf.matrix[3]/(tree.conf.matrix[3] + tree.conf.matrix[4])
+
+knn.tpr <- knn.conf.matrix[1]/(knn.conf.matrix[1] + knn.conf.matrix[2])
+knn.fpr <- knn.conf.matrix[3]/(knn.conf.matrix[3] + knn.conf.matrix[4])
+
+nbayes.tpr <- nbayes.conf.matrix[1]/(nbayes.conf.matrix[1] + nbayes.conf.matrix[2])
+nbayes.fpr <- nbayes.conf.matrix[3]/(nbayes.conf.matrix[3] + nbayes.conf.matrix[4])
+
+tprsAndFprs <- data.frame(
+  "C4.5/ID3 (drzewo)" = c("TPR" = tree.tpr, "FPR" = tree.fpr),
+  "kNN" = c("TPR" = knn.tpr, "FPR" = knn.fpr),
+  "NaiveBayes" = c("TPR" = nbayes.tpr, "FPR" = nbayes.fpr)
+)
+
+# ----- WYKRES ROC SPACE -------------------------------------------------
+
+rocX <- c(tree.tpr, knn.tpr, nbayes.tpr)
+rocY <- c(tree.fpr, knn.fpr, nbayes.fpr)
+names <- c("C4.5/ID3 (drzewo)", "kNN", "NaiveBayes")
+
+plot(rocX, rocY, main="ROC Space",
+     xlab="False Positive Rate (FPR)",
+     ylab="True Positive Rate (TPR)",
+     col="red")
+text(rocX, rocY, labels=names, cex= 0.7, pos=c(4,4,2))
 
 # ----- GRUPOWANIE METOD¥ K-ŒREDNICH -------------------------------------
 
@@ -235,18 +331,51 @@ barplot(c("C4.5/ID3" = tree.accuracy,
 #library(editrules)
 
 drugs.log <- log(drugs.norm[,1:12])
-#drugs.log <- do.call(data.frame, lapply(drugs.log, function(x) replace(x, is.infinite(x), 0)))
-#drugs.log <- do.call(data.frame, lapply(drugs.log, function(x) replace(x, x == 0, 0.5)))
+drugs.log <- drugs.log[is.finite(rowSums(drugs.log)),]
+drugs.log$gender <- NULL
 
 drugs.scale <- scale(drugs.log, center=TRUE)
 drugs.pca <- prcomp(drugs.scale)
 drugs.final <- predict(drugs.pca)
-#drugs.final <- iris.final[,1:2]
+drugs.final <- drugs.final[,1:11]
 
-drugs.kmeans <- kmeans(drugs.final, 3)
+drugs.kmeans <- kmeans(drugs.final, 2)
 
-plot(drugs.final, col = drugs.kmeans[["cluster"]], main="Algorytm grupowania")
-points(drugs.kmeans[["centers"]], col = 1:3, pch = 16, cex=1.5)
+dev.off() # par(...) reset
+plot(drugs.final, col = drugs.kmeans[["cluster"]],
+     main="Algorytm grupowania metod¹ k-œrednich")
+points(drugs.kmeans[["centers"]], col = 1:2, pch = 16, cex=1.5)
+
+# ----- REGU£Y ASOCJACYJNE -----------------------------------------------
+
+library(arules)
+
+raDrugs <- drugs[,2:6]
+raDrugs$alcohol <- drugs.alcohol$alcohol
+
+raDrugs$age <- factor(raDrugs$age)
+raDrugs$gender <- factor(raDrugs$gender)
+raDrugs$education <- factor(raDrugs$education)
+raDrugs$country <- factor(raDrugs$country)
+raDrugs$ethnicity <- factor(raDrugs$ethnicity)
+raDrugs$alcohol <- factor(raDrugs$alcohol)
+
+rules <- apriori(raDrugs)
+inspect(rules)
+
+# ----- REGU£Y ASOCJACYJNE: SELEKCJA ------------------------------------
+
+rules2 <- apriori(raDrugs,
+                 appearance = list(rhs=c("alcohol=User"),
+                 default="lhs"),
+                 control = list(verbose=F))
+rules2 <- sort(rules2, by="lift")
+inspect(rules2)
+
+# ----- REGU£Y ASOCJACYJNE GRAFICZNIE ------------------------------------
+
+library(arulesViz)
+plot(rules[1:10], method="graph", control=list(type="items"))
 
 # ----- STATYSTYKI -------------------------------------------------------
 
