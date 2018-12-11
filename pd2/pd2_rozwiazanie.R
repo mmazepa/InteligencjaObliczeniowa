@@ -243,7 +243,7 @@ drugs.test2 <- drugs.norm2[ind==2,1:13]
 # ----- KLASYFIKATOR C4.5/ID3 (DRZEWO) -----------------------------------
 
 #install.packages("party")
-#library(party)
+library(party)
 
 drugs.ctree <- ctree(factor(alcohol) ~ age + gender + education + country + ethnicity
                      + nscore + escore + oscore + ascore + cscore + impulsive + ss,
@@ -260,7 +260,7 @@ tree.accuracy <- sum(diag(tree.conf.matrix))/sum(tree.conf.matrix)
 # ----- KLASYFIKATOR KNN -------------------------------------------------
 
 #install.packages("class")
-#library(class)
+library(class)
 
 knn.3 <- knn(drugs.train[,1:12], drugs.test[,1:12], cl=drugs.train[,13], k=3, prob=FALSE)
 
@@ -272,7 +272,7 @@ knn.accuracy <- sum(diag(knn.conf.matrix))/sum(knn.conf.matrix)
 # ----- KLASYFIKATOR NAIVEBAYES ------------------------------------------
 
 #install.packages("e1071")
-#library(e1071)
+library(e1071)
 
 nbayes <- naiveBayes(drugs.train[,1:12], drugs.train[,13])
 nbayes$levels <- c("Non-user", "User")
@@ -286,7 +286,7 @@ nbayes.accuracy <- sum(diag(nbayes.conf.matrix))/sum(nbayes.conf.matrix)
 
 accuracies <- c("C4.5/ID3 (drzewo)" = tree.accuracy,
                 "kNN" = knn.accuracy,
-                "NaiveBayes" = nbayes.accuracy) # jeszcze jeden inny
+                "NaiveBayes" = nbayes.accuracy)
 accuracyPlot <- barplot(accuracies,
         main="Dok³adnoœci klasyfikatorów",
         xlab="Klasyfikator", ylab="Dok³adnoœæ klasyfikatora")
@@ -340,6 +340,7 @@ drugs.final <- predict(drugs.pca)
 drugs.final <- drugs.final[,1:11]
 
 drugs.kmeans <- kmeans(drugs.final, 2)
+table(drugs.kmeans[["cluster"]])
 
 dev.off() # par(...) reset
 plot(drugs.final, col = drugs.kmeans[["cluster"]],
@@ -371,11 +372,6 @@ rules2 <- apriori(raDrugs,
                  control = list(verbose=F))
 rules2 <- sort(rules2, by="lift")
 inspect(rules2)
-
-# ----- REGU£Y ASOCJACYJNE GRAFICZNIE ------------------------------------
-
-library(arulesViz)
-plot(rules[1:10], method="graph", control=list(type="items"))
 
 # ----- STATYSTYKI -------------------------------------------------------
 
