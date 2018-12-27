@@ -55,7 +55,6 @@ w roku akademickim 2018/2019.
 	<th>60 pkt</th>
 </tr>
 <tr>
-<!-- MM-235371	wtorek	1	0,8	0,5	0,3	0,5	1	1	1,2	0,2	1	0,7		6,5	6,5			15	36,2	82%	4,5 -->
 	<td>MM-235371</td>
 	<td>wtorek</td>
 	<td>1</td>

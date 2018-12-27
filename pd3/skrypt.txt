@@ -2,7 +2,9 @@ function(e) {
   var response = {};
   var enemy = e.data.enemyTank;
   var me = e.data.myTank;
-  var input  = [me.x/ 500.0, me.y/500.0, me.rotation/360.0];
+  var input  = [me.x/ 500.0,
+                me.y/500.0,
+                me.rotation/360.0];
 
   var weights1 = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   var bias1 = [0, 0, 0];
