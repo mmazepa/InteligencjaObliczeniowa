@@ -52,13 +52,18 @@ ind <- sample(2, nrow(dane.norm), replace=TRUE, prob=c(0.67, 0.33))
 dane.train <- dane.norm[ind==1,1:50]
 dane.test <- dane.norm[ind==2,1:50]
 
-# ----- POZBYCIE SIÊ WARTOŒCI NaN (NOT A NUMBER) -------------------------
+# ----- POZBYCIE SIÊ WARTOŒCI NaN (Not a Number) -------------------------
 
 is.nan.data.frame <- function(x) {
   do.call(cbind, lapply(x, is.nan))
 }
 dane.train[is.nan(dane.train)] <- 0
 dane.test[is.nan(dane.test)] <- 0
+
+# ----- WYKLUCZENIE KOLUMN "CONTROLS" ------------------------------------
+
+dane.train <- dane.train[ -c(10:16) ]
+dane.test <- dane.test[ -c(10:16) ]
 
 # ----- NEURALNET - EWALUACJA KLASYFIKATORA ------------------------------
 
