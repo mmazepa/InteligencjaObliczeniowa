@@ -16,7 +16,7 @@ dane <- read_csv(file, col_names = TRUE)
 
 # ----- POZBYCIE SIÊ NIEPOTRZEBNYCH KOLUMN -------------------------------
 
-dane <- dane[1:5000,]
+dane <- data.frame(dane[1:9], dane[10:16], dane[29:30])
 
 # ----- POTRZEBNE PACZKI - NEURALNET -------------------------------------
 
@@ -25,19 +25,18 @@ library(neuralnet)
 
 # ----- NORMALIZACJA DANYCH ----------------------------------------------
 
-norm <- function(x)
-{
+norm <- function(x) {
   (x-min(x))/(max(x)-min(x))
 }
 
-dane.norm2 <- dane.norm <- data.frame(norm(dane[1:50]))
+dane.norm <- norm(dane)
 
 # ----- PODZIA£ NA ZBIÓR TRENINGOWY I TESTOWY ----------------------------
 
 set.seed(1234)
 ind <- sample(2, nrow(dane.norm), replace=TRUE, prob=c(0.67, 0.33))
-dane.train <- dane.norm[ind==1,1:length(dane)]
-dane.test <- dane.norm[ind==2,1:length(dane)]
+dane.train <- dane.norm[ind==1, 1:length(dane)]
+dane.test <- dane.norm[ind==2, 1:length(dane)]
 
 # ----- POZBYCIE SIÊ WARTOŒCI NaN (Not a Number) -------------------------
 
@@ -49,10 +48,10 @@ dane.test[is.nan(dane.test)] <- 0
 
 # ----- NEURALNET - EWALUACJA KLASYFIKATORA ------------------------------
 
-outputNames <- names(dane[10:16]);
-inputNames <- names(c(dane[1:9], dane[17:length(dane)]))
+outputNames <- names(dane[10:16])
+inputNames <- names(dane[-10:-16])
 
-hiddenAmount <- 20
+hiddenAmount <- 15
 outputAmount <- length(outputNames)
 inputAmount <- length(inputNames)
 
@@ -60,7 +59,8 @@ formula <- paste(paste(outputNames, collapse=" + "),
                  paste(inputNames, collapse=" + "),
                  sep=" ~ ")
 
-dane.neuralnet <- neuralnet(formula, dane.train, hidden=hiddenAmount)
+dane.neuralnet <- neuralnet(formula, dane.train, hidden=hiddenAmount,
+                            threshold = 0.1, stepmax = 1e+06)
 plot(dane.neuralnet)
 
 # ----- WEIGHTS & BIAS: WYCI¥GNIÊCIE -------------------------------------
