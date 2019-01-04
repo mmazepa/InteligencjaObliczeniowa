@@ -51,7 +51,7 @@ dane.test[is.nan(dane.test)] <- 0
 outputNames <- names(dane[10:16])
 inputNames <- names(dane[-10:-16])
 
-hiddenAmount <- 15
+hiddenAmount <- 5
 outputAmount <- length(outputNames)
 inputAmount <- length(inputNames)
 
@@ -71,6 +71,11 @@ bias2 <- dane.neuralnet[["weights"]][[1]][[2]][1,]
 weights1 <- dane.neuralnet[["weights"]][[1]][[1]][2:(inputAmount+1),]
 weights2 <- dane.neuralnet[["weights"]][[1]][[2]][2:(hiddenAmount+1),]
 
+bias1 <- round(bias1, 3)
+bias2 <- round(bias2, 3)
+weights1 <- round(weights1, 3)
+weights2 <- round(weights2, 3)
+
 # bias1
 # bias2
 # weights1
@@ -87,7 +92,7 @@ length(weights2) == hiddenAmount * outputAmount
 
 # toString(bias1)
 # toString(bias2)
-# toString(weights1)
-# toString(weights2)
+# toString(t(weights1))
+# toString(t(weights2))
 
 # ------------------------------------------------------------------------
