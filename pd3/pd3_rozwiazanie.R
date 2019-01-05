@@ -16,7 +16,7 @@ dane <- read_csv(file, col_names = TRUE)
 
 # ----- POZBYCIE SIÊ NIEPOTRZEBNYCH KOLUMN -------------------------------
 
-dane <- data.frame(dane[1:9], dane[10:16], dane[29:30])
+dane <- data.frame(dane[1:4], dane[9], dane[10:16], dane[29:30])
 
 # ----- POTRZEBNE PACZKI - NEURALNET -------------------------------------
 
@@ -38,20 +38,12 @@ ind <- sample(2, nrow(dane.norm), replace=TRUE, prob=c(0.67, 0.33))
 dane.train <- dane.norm[ind==1, 1:length(dane)]
 dane.test <- dane.norm[ind==2, 1:length(dane)]
 
-# ----- POZBYCIE SIÊ WARTOŒCI NaN (Not a Number) -------------------------
-
-is.nan.data.frame <- function(x) {
-  do.call(cbind, lapply(x, is.nan))
-}
-dane.train[is.nan(dane.train)] <- 0
-dane.test[is.nan(dane.test)] <- 0
-
 # ----- NEURALNET - EWALUACJA KLASYFIKATORA ------------------------------
 
-outputNames <- names(dane[10:16])
-inputNames <- names(dane[-10:-16])
+outputNames <- names(dane[6:12])
+inputNames <- names(dane[-6:-12])
 
-hiddenAmount <- 5
+hiddenAmount <- 16
 outputAmount <- length(outputNames)
 inputAmount <- length(inputNames)
 
@@ -71,11 +63,6 @@ bias2 <- dane.neuralnet[["weights"]][[1]][[2]][1,]
 weights1 <- dane.neuralnet[["weights"]][[1]][[1]][2:(inputAmount+1),]
 weights2 <- dane.neuralnet[["weights"]][[1]][[2]][2:(hiddenAmount+1),]
 
-bias1 <- round(bias1, 3)
-bias2 <- round(bias2, 3)
-weights1 <- round(weights1, 3)
-weights2 <- round(weights2, 3)
-
 # bias1
 # bias2
 # weights1
@@ -90,9 +77,13 @@ length(weights2) == hiddenAmount * outputAmount
 
 # ----- WEIGHTS & BIAS: STRINGI DO KOPIOWANIA ----------------------------
 
-# toString(bias1)
-# toString(bias2)
-# toString(t(weights1))
-# toString(t(weights2))
+roundOnly <- function(x) {
+  return(toString(round(x, 3)))
+}
+
+roundOnly(bias1)
+roundOnly(bias2)
+roundOnly(t(weights1))
+roundOnly(t(weights2))
 
 # ------------------------------------------------------------------------
