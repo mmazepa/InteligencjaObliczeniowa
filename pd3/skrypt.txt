@@ -10,17 +10,17 @@ function(e) {
 
   // --- enemy Tank ----------
   var enemy = e.data.enemyTank;
-  var eb1 = enemy.bullets[0] || 0;
-  var eb2 = enemy.bullets[1] || 0;
-  var eb3 = enemy.bullets[2] || 0;
+  var eb1 = e.data.enemyTank.bullets[0] || 0;
+  var eb2 = e.data.enemyTank.bullets[1] || 0;
+  var eb3 = e.data.enemyTank.bullets[2] || 0;
 
   // --- current game Time ---
   var cgt = e.data.currentGameTime;
 
   var input = [me.x/500.0,
                me.y/500.0,
-               me.rotation/360.0,
-               me.cannonRotation/360.0,
+               //~ me.rotation/360.0,
+               //~ me.cannonRotation/360.0,
                //~ me.velocityX%16,
                //~ me.velocityY%16,
                //~ me.accelerationX/0.05,
@@ -39,14 +39,14 @@ function(e) {
                //~ mb3.velocityX,
                //~ mb3.velocityY,
                enemy.x/500.0,
-               enemy.y/500.0//,
+               enemy.y/500.0,
                //~ enemy.rotation/360.0,
                //~ enemy.cannonRotation/360.0,
                //~ enemy.velocityX%16,
                //~ enemy.velocityY%16,
                //~ enemy.accelerationX/0.05,
                //~ enemy.accelerationY/0.05,
-               //~ enemy.shootCooldown/100,
+               enemy.shootCooldown/100,
                //~ eb1.x/500.0,
                //~ eb1.y/500.0,
                //~ eb1.velocityX,
@@ -59,35 +59,35 @@ function(e) {
                //~ eb3.y/500.0,
                //~ eb3.velocityX,
                //~ eb3.velocityY,
-               /*cgt/40000.0*/];
+               cgt/40000.0];
 
-  var weights1 = [0.081, -1.183, 0.532, -0.079, 4.196, -0.54, -0.28, -0.939, -0.709, -0.279, 4.634, -0.201, -0.524, -0.825, -1.113, -0.879, 3.945, -0.05, -1.314, 2.776, 1.569, 3.22, -3.732, 1.96, -0.048, 1.942, 2.088, 2.292, -4.453, 0.825, -0.113, 0.222, 1.189, 0.86, -0.341, 0.166, -1.836, 1.052, -0.169, 1.788, 3.914, 1.544];
-  var bias1 = [-0.253, 0.899, 3.626, 1.488, 1.651, 0.47];
-  var hidden = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var weights1 = [7.930, -2.502, 3.660, 9.324, -9.476, 6.572, 1.704, -0.5, 8.314, 1.918, 2.674, 4.437, -7.746, 8.572, -4.97, -3.381, 3.512, -9.658, 4.300, 0.25, -1.719, 8.110, 2.586, -8.181, 7.627, -9.280, 8.522, 8.57, -3.313, -0.853, -4.646, -5.552, -6.601, -2.592, -0.921, 0.520, 1.674, 5.13, 1.657, -3.15, 4.171, -2.575, -3.280, -2.165, 9.653, 1.728, -10.894, -1.778, 5.23, 6.814, 10.33, 6.599, 7.88, -8.604, -8.352, -8.387];
+  var bias1 = [1.714, -3.255, -1.800, 0.278, 2.571, -2.876, 1.702, -0.287];
+  var hidden = [0, 0, 0, 0, 0, 0, 0, 0];
 
   var i, j;
-  for (i = 0; i < 16; i++) {
+  for (i = 0; i < 8; i++) {
     for (j = 0; j < 7; j++) {
       hidden[i] = input[j] * weights1[i*7+j];
     }
     hidden[i] = hidden[i] + bias1[i];
     hidden[i] = 1/(1 + Math.pow(Math.E, -hidden[i]));
   }
-  //~ console.log("[hidden]: " + hidden);
+  console.log("[hidden]: " + hidden);
 
-  var weights2 = [0.01, 0.428, -0.792, -0.377, -0.71, 0.069, 0.791, -0.041, -0.17, 0.368, 0.153, 0.31, -0.037, -0.363, 0.453, -0.281, -1.126, 0.074, -1.007, 0.419, 0.706, -0.327, 0.245, 2.043, 0.169, 2.4, -0.214, -0.335, -1.067, -0.007, 0.059, 0.223, -0.761, 0.511, 0.392, 0.086, 0.55, -1.273, -0.522, -1.16, 0.115, 1.131];
-  var bias2 = [1.322, 0.085, 0.349, 0.328, 0.638, -0.367, -1.104];
+  var weights2 = [0.577, -7.519, 0.339, 10.537, -3.811, -0.710, 8.774, 8.176, 9.520, 2.716, 4.804, -1.511, -2.613, 9.191, -0.280, 4.379, 4.442, -8.881, -9.687, 1.188, 0.659, -7.983, -5.338, 2.392, -9.806, -5.952, -7.250, -6.614, -1.223, -3.177, -0.335, -10.25, -10.26, -0.489, 5.484, -3.924, -8.147, -8.271, 10.692, 1.217, 1.650, 8.748, -3.535, 3.966, -4.269, 8.907, -7.785, 0.387, -8.169, 6.33, -4.547, -3.149, -6.219, 3.168, -10.278, 1.855];
+  var bias2 = [2.707, 0.405, 0.856, 2.192, -3.689, 2.204, 1.753];
   var output = [0, 0, 0, 0, 0, 0, 0];
 
   for (i = 0; i < 7; i++) {
-    for (j = 0; j < 16; j++) {
-      output[i] = hidden[j] * weights2[i*16+j];
+    for (j = 0; j < 8; j++) {
+      output[i] = hidden[j] * weights2[i*8+j];
     }
     output[i] = output[i] + bias2[i];
     output[i] = 1/(1 + Math.pow(Math.E, -output[i]));
     output[i] = Math.round(output[i]);
   }
-  //~ console.log("[output]: " + output);
+  console.log("[output]: " + output);
 
   response.turnLeft = output[0];
   response.turnRight = output[1];
