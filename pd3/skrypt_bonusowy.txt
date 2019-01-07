@@ -1,0 +1,60 @@
+function(e) {  	
+	var response = {};
+	var myTank = e.data.myTank;
+	var enemy = e.data.enemyTank;
+	var random = Math.round(Math.random()*10000,1);
+
+	response.goForward = 1;
+
+	if (myTank.x > 450) response.turnLeft = 1;
+	else if (myTank.x < 50) response.turnRight = 1;
+	else {
+		if (random > 5000) response.turnLeft = 1;
+		else response.turnRight = 1;
+	}
+
+	if (myTank.y > 450) response.turnLeft = 1;
+	else if (myTank.y < 50) response.turnRight = 1;
+	else {
+		if (random > 5000) response.turnLeft = 1;
+		else response.turnRight = 1;
+	}
+
+	var xs = Math.round(enemy.x - myTank.x);
+	var ys = Math.round(myTank.y - enemy.y);
+	var my_angle = Math.abs(myTank.cannonRotation);
+	var angle = Math.atan2(ys,xs)*180/Math.PI;
+
+	if (xs > 0 && ys != 0) {
+		if (ys < 0) angle += 360;
+		else if (ys > 0) angle += 0;
+	} else if (xs < 0 && ys != 0) {
+		if (ys > 0) angle += 0;
+		else if (ys < 0) angle += 360;
+	} else if (xs > 0 && ys == 0) {
+		angle = 0;
+	} else if (xs < 0 && ys == 0) {
+		angle = 180;
+	} else if (xs == 0 && ys > 0) {
+		angle = 90;
+	} else if (xs == 0 && ys < 0) {
+		angle = 270;
+	}
+	
+	console.clear();
+	console.log("[rotation]: " + Math.round(angle) + ", " + Math.round(my_angle));
+	//~ console.log("[position]: " + Math.round(enemy.x) + ", " + Math.round(enemy.y));
+	
+	if (angle - my_angle > 0)
+		response.cannonLeft = 1;
+	else if (angle - my_angle < 360)
+		response.cannonRight = 1;
+	else {
+		response.cannonLeft = 0;
+		response.cannonRight = 0;
+	}
+
+	response.shoot = 1;
+
+	self.postMessage(response);
+}

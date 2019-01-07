@@ -16,7 +16,7 @@ dane <- read_csv(file, col_names = TRUE)
 
 # ----- POZBYCIE SIÊ NIEPOTRZEBNYCH KOLUMN -------------------------------
 
-dane <- data.frame(dane[1:4], dane[9], dane[10:16], dane[29:30])
+dane <- data.frame(dane[1:9], dane[10:16], dane[29:37])
 
 # ----- POTRZEBNE PACZKI - NEURALNET -------------------------------------
 
@@ -40,10 +40,10 @@ dane.test <- dane.norm[ind==2, 1:length(dane)]
 
 # ----- NEURALNET - EWALUACJA KLASYFIKATORA ------------------------------
 
-outputNames <- names(dane[6:12])
-inputNames <- names(dane[-6:-12])
+outputNames <- names(dane[10:16])
+inputNames <- names(dane[-10:-16])
 
-hiddenAmount <- 16
+hiddenAmount <- 10
 outputAmount <- length(outputNames)
 inputAmount <- length(inputNames)
 
@@ -96,24 +96,18 @@ b1 <- c(0.6, 1.2, -3.0, -0.2, 0.4, 3.5, 3.8, -2.3, -2.0, -1.2)
 w2 <- c(-5.7, -9.2, -0.7, -2.2, -12.5, 9.0, -15.1, -6.1, -5.3, 11.6, -1.4, -12.6, 0.5, -11.9, 10.9, 6.6, -1.9, -2.2, -9.1, -14.1, 10.2, -11.3, 0.4, -6.5, 2.7, -12.6, 9.3, -11.6, 13.3, -0.4, -5.3, 3.4, 5.1, -15.6, 7.1, -5.7, 6.4, 0.4, 0.0, -9.5, -11.5, 1.4, 8.9, -12.4, 5.5, 7.9, 13.7, -8.5, 4.8, 7.0, -12.8, 7.6, 0.6, -8.5, -11.7, -8.2, 2.0, -4.2, -12.3, 1.2, -13.1, 14.7, 7.4, -1.9, 2.8, 14.0, -4.2, -14.8, 6.3, 6.1)
 b2 = c(-0.6, -2.1, 0.0, 2.3, 1.3, 1.1, -3.3)
 
-weights1 <- data.frame(w1[1:18], w1[19:36], w1[37:54], w1[55:72], w1[73:90],
-                       w1[91:108], w1[109:126], w1[127:144], w1[145:162], w1[163:180])
-names(weights1) <- c(1:10)
+weights1 <- matrix(matrix(c(b1,w1)), nrow=10, ncol=19, byrow=FALSE)
+dimnames(weights1) = list(c(1:10), c(1:19))
 
-bias1 <- data.frame(b1)
-names(bias1) <- c(1)
+weights2 <- matrix(matrix(c(b2,w2)), nrow=7, ncol=11, byrow=FALSE)
+dimnames(weights2) = list(c(1:7), c(1:11))
 
-weights2 <- data.frame(w2[1:10], w2[11:20], w2[21:30], w2[31:40], w2[41:50],
-                       w2[51:60], w2[61:70])
-names(weights2) <- c(1:7)
+bias1 <- b1
+bias2 <- b2
 
-bias2 <- data.frame(b2)
-names(bias2) <- c(1)
+dane.neuralnet[["weights"]][[1]][[1]][1:(inputAmount+1),] <- t(weights1)
+dane.neuralnet[["weights"]][[1]][[2]][1:(hiddenAmount+1),] <- t(weights2)
 
-weights1
-bias1
-
-weights2
-bias2
+plot(dane.neuralnet)
 
 # ------------------------------------------------------------------------
