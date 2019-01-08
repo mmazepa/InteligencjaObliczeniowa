@@ -1,4 +1,4 @@
-## Inteligencja Obliczeniowa
+﻿## Inteligencja Obliczeniowa
 
 Niniejsze repozytorium przeznaczone jest do przechowywania zadań
 realizowanych w ramach przedmiotu Inteligencja Obliczeniowa
@@ -11,7 +11,7 @@ w roku akademickim 2018/2019.
 	<th colspan=4 rowspan=1>PRACE DOMOWE</th>
 	<th colspan=1 rowspan=2>KOLOKWIUM</th>
 	<th colspan=1 rowspan=2>SUMA</th>
-	<th colspan=1 rowspan=3>PROCENT (obecny max. 44 pkt)</th>
+	<th colspan=1 rowspan=3>PROCENT (obecny max. 46 pkt)</th>
 	<th colspan=1 rowspan=3>OCENA</th>
 </tr>
 <tr>
@@ -68,14 +68,14 @@ w roku akademickim 2018/2019.
 	<td>0.2</td>
 	<td>1</td>
 	<td>0.7</td>
-	<td>-</td>
+	<td>0.1</td>
 	<td>6.5</td>
 	<td>6.5</td>
 	<td>-</td>
 	<td>-</td>
 	<td>15</td>
-	<td>36.2</td>
-	<td>82%</td>
-	<td>4.5</td>
+	<td>36.3</td>
+	<td>79%</td>
+	<td>4.0</td>
 </tr>
 </table>
