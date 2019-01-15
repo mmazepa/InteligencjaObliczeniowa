@@ -68,14 +68,14 @@ w roku akademickim 2018/2019.
 	<td>0.2</td>
 	<td>1</td>
 	<td>0.7</td>
-	<td>0.1</td>
+	<td>1</td>
 	<td>6.5</td>
 	<td>6.5</td>
 	<td>7</td>
 	<td>-</td>
 	<td>15</td>
-	<td>43.3</td>
-	<td>82%</td>
+	<td>44.2</td>
+	<td>83%</td>
 	<td>4.5</td>
 </tr>
 </table>

@@ -17,15 +17,25 @@
 library(readr)
 file <- "C:/Users/Mariusz/Desktop/IO/Lab Repo/pd4/YouTube-Spam-Collection-v1/"
 
-psy <- read_csv(paste(file, "Youtube01-Psy.csv", sep = ""), col_names = TRUE)
-katyperry <- read_csv(paste(file, "Youtube02-KatyPerry.csv", sep = ""), col_names = TRUE)
-lmfao <- read_csv(paste(file, "Youtube03-LMFAO.csv", sep = ""), col_names = TRUE)
-eminem <- read_csv(paste(file, "Youtube04-Eminem.csv", sep = ""), col_names = TRUE)
-shakira <- read_csv(paste(file, "Youtube05-Shakira.csv", sep = ""), col_names = TRUE)
+getFile <- function(filename) {
+  return(read_csv(paste(file, filename, sep = ""), col_names = TRUE))
+}
+
+prepareDatabase <- function() {
+  psy <- getFile("Youtube01-Psy.csv")
+  katyperry <- getFile("Youtube02-KatyPerry.csv")
+  lmfao <- getFile("Youtube03-LMFAO.csv")
+  eminem <- getFile("Youtube04-Eminem.csv")
+  shakira <- getFile("Youtube05-Shakira.csv")
+  return(rbind(psy, katyperry, lmfao, eminem, shakira))
+}
+
+db <- prepareDatabase()
 
 # ----- PREPROCESSING ----------------------------------------------------
 
-# ...
+library(dplyr)
+db <- select(db, AUTHOR, CONTENT, CLASS)
 
 # ----- KLASYFIKACJA TEKSTÓW ---------------------------------------------
 

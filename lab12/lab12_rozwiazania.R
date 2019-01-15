@@ -7,15 +7,15 @@
 # https://blogs.rstudio.com/tensorflow/posts/2017-12-07-text-classification-with-keras/
 # ________________________________________________________________________
 
-devtools::install_github("rstudio/tensorflow")
+#devtools::install_github("rstudio/tensorflow")
 library(tensorflow)
-install_tensorflow(method = "conda", conda = "auto",
-                   version = "1.5.0", envname = "r-tensorflow")
+#install_tensorflow(method = "conda", conda = "auto",
+#                   version = "1.5.0", envname = "r-tensorflow")
 library(reticulate)
-use_condaenv("r-tensorflow", required = TRUE)
+#use_condaenv("r-tensorflow", required = TRUE)
 library(keras)
-install_keras(method = "conda", tensorflow = "1.5.0")
-is_keras_available()
+#install_keras(method = "conda", tensorflow = "1.5.0")
+#is_keras_available()
 
 # --- THE IMDB DATASET ---------------------------------------------------
 
