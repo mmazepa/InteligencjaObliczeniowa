@@ -143,6 +143,7 @@ for (sample in samples)
   for (word in strsplit(sample, " ")[[1]])
     if (!word %in% names(token_index))
       token_index[[word]] <- length(token_index) + 2
+
 max_length <- 10
 results <- array(0, dim = c(length(samples),
                             max_length,
@@ -164,6 +165,7 @@ samples <- c("The cat sat on the mat.",
 ascii_tokens <- c("", sapply(as.raw(c(32:126)), rawToChar))
 token_index <- c(1:(length(ascii_tokens)))
 names(token_index) <- ascii_tokens
+
 max_length <- 50
 results <- array(0, dim = c(length(samples), max_length, length(token_index)))
 
@@ -181,11 +183,14 @@ for (i in 1:length(samples)) {
 library(keras)
 samples <- c("The cat sat on the mat.",
              "The dog ate my homework.")
+
 tokenizer <- text_tokenizer(num_words = 1000) %>%
   fit_text_tokenizer(samples)
+
 sequences <- texts_to_sequences(tokenizer, samples)
 one_hot_results <- texts_to_matrix(tokenizer, samples, mode = "binary")
 word_index <- tokenizer$word_index
+
 cat("Found", length(word_index), "unique tokens.\n")
 
 # --- WORD-LEVEL ONE-HOT ENCODING WITH HASHING TRICK (TOY EXAMPLE) -------
@@ -195,6 +200,7 @@ library(hashFunction)
 samples <- c("The cat sat on the mat.",
              "The dog ate my homework.")
 dimensionality <- 1000
+
 max_length <- 10
 results <- array(0, dim = c(length(samples), max_length, dimensionality))
 
@@ -215,8 +221,11 @@ embedding_layer <- layer_embedding(input_dim = 1000, output_dim = 64)
 
 max_features <- 10000
 maxlen <- 20
+
 imdb <- dataset_imdb(num_words = max_features)
+
 c(c(x_train, y_train), c(x_test, y_test)) %<-% imdb
+
 x_train <- pad_sequences(x_train, maxlen = maxlen)
 x_test <- pad_sequences(x_test, maxlen = maxlen)
 
@@ -226,13 +235,16 @@ model <- keras_model_sequential() %>%
   layer_embedding(input_dim = 10000, output_dim = 8,
                   input_length = maxlen) %>%
   layer_flatten() %>%
-layer_dense(units = 1, activation = "sigmoid")
+  layer_dense(units = 1, activation = "sigmoid")
+
 model %>% compile(
   optimizer = "rmsprop",
   loss = "binary_crossentropy",
   metrics = c("acc")
 )
+
 summary(model)
+
 history <- model %>% fit(
   x_train, y_train,
   epochs = 10,
@@ -263,7 +275,7 @@ for (label_type in c("neg", "pos")) {
 
 library(keras)
 maxlen <- 100
-training_samples <- 200
+training_samples <- 500
 validation_samples <- 10000
 max_words <- 10000
 tokenizer <- text_tokenizer(num_words = max_words) %>%
@@ -281,6 +293,7 @@ indices <- sample(1:nrow(data))
 training_indices <- indices[1:training_samples]
 validation_indices <- indices[(training_samples + 1):
                                 (training_samples + validation_samples)]
+
 x_train <- data[training_indices,]
 y_train <- labels[training_indices]
 x_val <- data[validation_indices,]
@@ -300,12 +313,14 @@ for (i in 1:length(lines)) {
   word <- values[[1]]
   embeddings_index[[word]] <- as.double(values[-1])
 }
+
 cat("Found", length(embeddings_index), "word vectors.\n")
 
 # --- PREPARING THE GLOVE WORD-EMBEDDINGS MATRIX -------------------------
 
 embedding_dim <- 100
 embedding_matrix <- array(0, c(max_words, embedding_dim))
+
 for (word in names(word_index)) {
   index <- word_index[[word]]
   if (index < max_words) {
@@ -323,6 +338,7 @@ model <- keras_model_sequential() %>%
   layer_flatten() %>%
   layer_dense(units = 32, activation = "relu") %>%
   layer_dense(units = 1, activation = "sigmoid")
+
 summary(model)
 
 # --- LOADING PRETRAINED WORD EMBEDDINGS INTO EMBEDDING LAYER ------------
