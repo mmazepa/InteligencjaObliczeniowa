@@ -173,9 +173,100 @@ d <- dist(t(dtmss), method="euclidian")
 kfit <- kmeans(d, 2)   
 clusplot(as.matrix(d), kfit$cluster, color=T, shade=T, labels=2, lines=0)
 
+# ------------------------------------------------------------------------
 # ----- KLASYFIKACJA TEKSTÓW ---------------------------------------------
+# ------------------------------------------------------------------------
 
-# ...
+prepareForClassification <- function() {
+  loadFile <- function(filename) {
+    desiredFile <- paste(originalPath, filename, sep = "/")
+    return(read_csv(desiredFile, col_names = TRUE))
+  }
+  psy <- loadFile("Youtube01-Psy.csv")
+  katyperry <- loadFile("Youtube02-KatyPerry.csv")
+  lmfao <- loadFile("Youtube03-LMFAO.csv")
+  eminem <- loadFile("Youtube04-Eminem.csv")
+  shakira <- loadFile("Youtube05-Shakira.csv")
+  result <- rbind(psy, katyperry, lmfao, eminem, shakira)
+  result <- select(result, CONTENT, CLASS)
+  return (result)
+}
+
+db <- data.frame(prepareForClassification())
+
+for (i in 1:nrow(db)) {
+  if (db$CLASS[i] == 1) db$CLASS[i] = "spam"
+  else db$CLASS[i] = "not-spam"
+}
+
+db$CLASS <- factor(db$CLASS)
+str(db$CLASS)
+
+db_corpus <- VCorpus(VectorSource(db$CONTENT))
+
+db_corpus_clean <- db_corpus %>%
+  tm_map(content_transformer(tolower)) %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removeWords, stopwords()) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stemDocument) %>%
+  tm_map(stripWhitespace)
+
+db_dtm <- DocumentTermMatrix(db_corpus_clean)
+
+db_dtm_no_prep <- DocumentTermMatrix(
+  db_corpus,
+  control = list(
+    tolower = TRUE,
+    removeNumbers = TRUE,
+    stopwords = TRUE,
+    removePunctuation = TRUE,
+    stemming = TRUE
+  )
+)
+
+db_dtm_train <- db_dtm[seq(1, db_dtm$nrow*0.75), ]
+db_dtm_test <- db_dtm[seq(db_dtm$nrow*0.75+1, db_dtm$nrow), ]
+db_train_labels <- db[seq(1, db_dtm$nrow*0.75), ]$CLASS
+db_test_labels <- db[seq(db_dtm$nrow*0.75+1, db_dtm$nrow), ]$CLASS
+
+db_train_labels %>%
+  table %>%
+  prop.table
+
+db_test_labels %>%
+  table %>%
+  prop.table
+
+db_dtm_freq_train <- db_dtm_train %>%
+  findFreqTerms(5) %>%
+  db_dtm_train[ , .]
+
+db_dtm_freq_test <- db_dtm_test %>%
+  findFreqTerms(5) %>%
+  db_dtm_test[ , .]
+
+convert_counts <- function(x) {
+  x <- ifelse(x > 0, "Yes", "No")
+}
+
+db_train <- db_dtm_freq_train %>%
+  apply(MARGIN = 2, convert_counts)
+db_test <- db_dtm_freq_test %>%
+  apply(MARGIN = 2, convert_counts)
+
+rownames(db_test) <- 1:nrow(db_test)
+
+#install.packages("e1071")
+library(e1071)
+db_classifier <- naiveBayes(db_train, db_train_labels)
+db_pred <- predict(db_classifier, db_train) # PROBLEM WITH PREDICT (!!!)
+
+#install.packages("gmodels")
+library(gmodels)
+CrossTable(db_pred, db_test_labels, prop.chisq = FALSE, chisq = FALSE, 
+           prop.t = FALSE,
+           dnn = c("Predicted", "Actual"))
 
 # ----- SENTIMENT ANALYSIS -----------------------------------------------
 
