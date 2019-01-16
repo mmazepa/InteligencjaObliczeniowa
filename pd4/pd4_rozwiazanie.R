@@ -270,6 +270,64 @@ CrossTable(db_pred, db_test_labels, prop.chisq = FALSE, chisq = FALSE,
 
 # ----- SENTIMENT ANALYSIS -----------------------------------------------
 
-# ...
+#install.packages("tidyverse")
+#install.packages("tidytext")
+#install.packages("stringr")
+library(tidyverse)
+library(tidytext)
+library(stringr)
+#sentiments
+#get_sentiments("afinn")
+#get_sentiments("bing")
+#get_sentiments("nrc")
+
+thesis_words <- data_frame(file = paste0(modifiedPath, 
+                                         c("/Youtube01-Psy.csv",
+                                           "/Youtube02-KatyPerry.csv",
+                                           "/Youtube03-LMFAO.csv",
+                                           "/Youtube04-Eminem.csv",
+                                           "/Youtube05-Shakira.csv"))) %>%
+  mutate(text = map(file, read_lines))
+thesis_words
+
+thesis_words <- thesis_words %>%
+  unnest() %>%
+  filter(!str_detect(text, "^(\\\\[A-Z,a-z])"),
+         text != "") %>%
+  mutate(line_number = 1:n(),
+         file = str_sub(basename(file), 1, -5))
+thesis_words$file <- forcats::fct_relevel(thesis_words$file, c("Youtube01-Psy",
+                                                               "Youtube02-KatyPerry",
+                                                               "Youtube03-LMFAO",
+                                                               "Youtube04-Eminem",
+                                                               "Youtube05-Shakira"))
+thesis_words <- thesis_words %>%
+  unnest_tokens(word, text) %>%
+  filter(!str_detect(word, "[0-9]"),
+         word != "ffef",
+         word != "www",
+         word != "com",
+         word != "amp",
+         word != "https", 
+         word != "http",
+         !str_detect(word, "[a-z]_"),
+         !str_detect(word, ":"))
+thesis_words
+
+thesis_words %>%
+  inner_join(get_sentiments("nrc")) %>%
+  group_by(index = line_number %/% 25, file, sentiment) %>%
+  summarize(n = n()) %>%
+  ggplot(aes(x = index, y = n, fill = file)) + 
+  geom_bar(stat = "identity", alpha = 0.8) + 
+  facet_wrap(~ sentiment, ncol = 5)
+
+thesis_words %>%
+  inner_join(get_sentiments("bing")) %>%
+  group_by(index = line_number %/% 25, file, sentiment) %>%
+  summarize(n = n()) %>%
+  ggplot(aes(x = index, y = n, fill = file)) + 
+  geom_bar(stat = "identity", alpha = 0.8) + 
+  facet_wrap(~ sentiment, ncol = 5)
 
 # ------------------------------------------------------------------------
