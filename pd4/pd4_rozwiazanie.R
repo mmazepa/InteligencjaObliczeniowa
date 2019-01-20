@@ -201,72 +201,72 @@ for (i in 1:nrow(db)) {
 
 db$CLASS <- factor(db$CLASS)
 str(db$CLASS)
+table(db$CLASS)
+
+#install.packages("tm")
+library(tm)
 
 db_corpus <- VCorpus(VectorSource(db$CONTENT))
+print(db_corpus)
 
-db_corpus_clean <- db_corpus %>%
-  tm_map(content_transformer(tolower)) %>%
-  tm_map(removeNumbers) %>%
-  tm_map(removeWords, stopwords()) %>%
-  tm_map(removePunctuation) %>%
-  tm_map(stemDocument) %>%
-  tm_map(stripWhitespace)
+inspect(db_corpus[1:3])
+as.character(db_corpus[[341]])
+
+db_corpus_clean <- tm_map(db_corpus, content_transformer(tolower))
+as.character(db_corpus[[341]])
+as.character((db_corpus_clean[[341]]))
+
+db_corpus_clean <- tm_map(db_corpus_clean, removeNumbers)
+db_corpus_clean <- tm_map(db_corpus_clean, removeWords, stopwords())
+db_corpus_clean <- tm_map(db_corpus_clean, removePunctuation)
+as.character((db_corpus_clean[[341]]))
+
+#install.packages("SnowballC")
+library(SnowballC)
+
+db_corpus_clean <- tm_map(db_corpus_clean, stemDocument)
+db_corpus_clean <- tm_map(db_corpus_clean, stripWhitespace)
+as.character(db_corpus_clean[[341]])
+
+db_corpus_clean <- tm_map(db_corpus_clean, stripWhitespace)
+as.character(db_corpus_clean[[341]])
 
 db_dtm <- DocumentTermMatrix(db_corpus_clean)
 
-db_dtm_no_prep <- DocumentTermMatrix(
-  db_corpus,
-  control = list(
-    tolower = TRUE,
-    removeNumbers = TRUE,
-    stopwords = TRUE,
-    removePunctuation = TRUE,
-    stemming = TRUE
-  )
-)
+.75 * 1956
+.25 * 1956
 
-db_dtm_train <- db_dtm[seq(1, db_dtm$nrow*0.75), ]
-db_dtm_test <- db_dtm[seq(db_dtm$nrow*0.75+1, db_dtm$nrow), ]
-db_train_labels <- db[seq(1, db_dtm$nrow*0.75), ]$CLASS
-db_test_labels <- db[seq(db_dtm$nrow*0.75+1, db_dtm$nrow), ]$CLASS
+db_dtm_train <- db_dtm[1:1467, ]
+db_dtm_test <- db_dtm[1468:1956, ]
 
-db_train_labels %>%
-  table %>%
-  prop.table
+prop.table(table(db_train_labels))
+prop.table(table(db_test_labels))
 
-db_test_labels %>%
-  table %>%
-  prop.table
+db_freq_words <- findFreqTerms(db_dtm_train, 5)
+str(db_freq_words)
 
-db_dtm_freq_train <- db_dtm_train %>%
-  findFreqTerms(5) %>%
-  db_dtm_train[ , .]
-
-db_dtm_freq_test <- db_dtm_test %>%
-  findFreqTerms(5) %>%
-  db_dtm_test[ , .]
+db_dtm_freq_train <- db_dtm_train[ , db_freq_words]
+db_dtm_freq_test <- db_dtm_test[ , db_freq_words]
 
 convert_counts <- function(x) {
   x <- ifelse(x > 0, "Yes", "No")
 }
 
-db_train <- db_dtm_freq_train %>%
-  apply(MARGIN = 2, convert_counts)
-db_test <- db_dtm_freq_test %>%
-  apply(MARGIN = 2, convert_counts)
+db_train <- apply(db_dtm_freq_train, MARGIN = 2, convert_counts)
+db_test <- apply(db_dtm_freq_test, MARGIN = 2, convert_counts)
 
-rownames(db_test) <- 1:nrow(db_test)
-
-#install.packages("e1071")
 library(e1071)
-db_classifier <- naiveBayes(db_train, db_train_labels)
-db_pred <- predict(db_classifier, db_train) # PROBLEM WITH PREDICT (!!!)
 
-#install.packages("gmodels")
+db_classifier <- naiveBayes(db_train, db_train_labels)
+db_test_pred <- predict(db_classifier, db_test)
+
 library(gmodels)
-CrossTable(db_pred, db_test_labels, prop.chisq = FALSE, chisq = FALSE, 
-           prop.t = FALSE,
-           dnn = c("Predicted", "Actual"))
+CrossTable(db_test_pred, db_test_labels,
+           prop.chisq = FALSE, prop.t = FALSE,
+           dnn = c('predicted', 'actual'))
+
+(28+5)/489
+(252+204)/489
 
 # ----- SENTIMENT ANALYSIS -----------------------------------------------
 
@@ -281,27 +281,27 @@ library(stringr)
 #get_sentiments("bing")
 #get_sentiments("nrc")
 
-thesis_words <- data_frame(file = paste0(modifiedPath, 
+comments_words <- data_frame(file = paste0(modifiedPath, 
                                          c("/Youtube01-Psy.csv",
                                            "/Youtube02-KatyPerry.csv",
                                            "/Youtube03-LMFAO.csv",
                                            "/Youtube04-Eminem.csv",
                                            "/Youtube05-Shakira.csv"))) %>%
   mutate(text = map(file, read_lines))
-thesis_words
+comments_words
 
-thesis_words <- thesis_words %>%
+comments_words <- comments_words %>%
   unnest() %>%
   filter(!str_detect(text, "^(\\\\[A-Z,a-z])"),
          text != "") %>%
   mutate(line_number = 1:n(),
          file = str_sub(basename(file), 1, -5))
-thesis_words$file <- forcats::fct_relevel(thesis_words$file, c("Youtube01-Psy",
+comments_words$file <- forcats::fct_relevel(comments_words$file, c("Youtube01-Psy",
                                                                "Youtube02-KatyPerry",
                                                                "Youtube03-LMFAO",
                                                                "Youtube04-Eminem",
                                                                "Youtube05-Shakira"))
-thesis_words <- thesis_words %>%
+comments_words <- comments_words %>%
   unnest_tokens(word, text) %>%
   filter(!str_detect(word, "[0-9]"),
          word != "ffef",
@@ -312,9 +312,9 @@ thesis_words <- thesis_words %>%
          word != "http",
          !str_detect(word, "[a-z]_"),
          !str_detect(word, ":"))
-thesis_words
+comments_words
 
-thesis_words %>%
+comments_words %>%
   inner_join(get_sentiments("nrc")) %>%
   group_by(index = line_number %/% 25, file, sentiment) %>%
   summarize(n = n()) %>%
@@ -322,12 +322,19 @@ thesis_words %>%
   geom_bar(stat = "identity", alpha = 0.8) + 
   facet_wrap(~ sentiment, ncol = 5)
 
-thesis_words %>%
+comments_words %>%
   inner_join(get_sentiments("bing")) %>%
   group_by(index = line_number %/% 25, file, sentiment) %>%
   summarize(n = n()) %>%
   ggplot(aes(x = index, y = n, fill = file)) + 
   geom_bar(stat = "identity", alpha = 0.8) + 
   facet_wrap(~ sentiment, ncol = 5)
+
+library(reshape2)
+comments_words %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("red", "darkgreen"), max.words = 100)
 
 # ------------------------------------------------------------------------
