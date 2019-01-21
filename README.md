@@ -6,9 +6,7 @@ w roku akademickim 2018/2019.
 
 <table>
 	<tr>
-		<th colspan=1 rowspan=3>DANE</th>
-	</tr>
-	<tr>
+		<th colspan=1 rowspan=2>DANE</th>
 		<th colspan=2 rowspan=1>Inicjały z indeksem</th>
 		<td>MM-235371</td>
 	</tr>
