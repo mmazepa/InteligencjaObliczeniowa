@@ -77,7 +77,8 @@ preprocessing <- function() {
   comments <- tm_map(comments, removeWords,
                      c("feff", "www", "com", "amp"))
 
-    comments <- tm_map(comments, stripWhitespace)
+  #comments <- tm_map(comments, stemDocument)
+  comments <- tm_map(comments, stripWhitespace)
   comments <- tm_map(comments, PlainTextDocument)  
 }
 
@@ -93,7 +94,7 @@ tdm
 
 # ----- EKSPLORACJA DANYCH -----------------------------------------------
 
-findFreqTerms(dtm, lowfreq=50)
+findFreqTerms(dtm, lowfreq=100)
 
 freq <- colSums(as.matrix(dtm))
 length(freq)
@@ -111,15 +112,14 @@ saveFile <- function() {
 
 saveFile()
 
-freq <- colSums(as.matrix(dtm))
+freq <- sort(colSums(as.matrix(dtm)), decreasing=TRUE)
+wf <- data.frame(word=names(freq), freq=freq)
+
+head(wf, 10)
 head(table(freq), 20)
 tail(table(freq), 20)
 
 dtms <- removeSparseTerms(dtm, 0.2)
-freq <- colSums(as.matrix(dtms))
-freq <- sort(colSums(as.matrix(dtm)), decreasing=TRUE)
-wf <- data.frame(word=names(freq), freq=freq)   
-head(wf, 10)
 
 # ----- WYKRESY: CZÊSTOTLIWOŒÆ WYSTÊPOWANIA S£ÓW -------------------------
 
@@ -138,7 +138,7 @@ p
 findAssocs(dtm, c("subscribe" , "check"), corlimit=0.85)
 findAssocs(dtms, "please", corlimit=0.70)
 
-# ----- WORD CLOUDS! -----------------------------------------------------
+# ----- WORD CLOUDS ------------------------------------------------------
 
 #install.packages("wordcloud")
 library(wordcloud)
@@ -153,7 +153,7 @@ wordcloud(names(freq), freq, min.freq=50,
 
 # ----- KLASTROWANIE WED£UG PODOBIEÑSTWA TEKSTÓW -------------------------
 
-dtmss <- removeSparseTerms(dtm, 0.5)
+dtmss <- removeSparseTerms(dtms, 0.01)
 dtmss
 
 library(cluster)
@@ -161,17 +161,24 @@ d <- dist(t(dtmss), method="euclidian")
 fit <- hclust(d=d, method="complete")
 fit
 
-plot(fit, hang=-1)
+# install.packages("ape")
+library(ape)
+colors = c("purple", "orange", "cyan", "red", "green", "blue",
+           "darkred", "darkgreen", "dimgray", "black")
+clus10 = cutree(fit, 10)
+plot(as.phylo(fit), type = "fan", tip.color = colors[clus10],
+     label.offset = 1, cex = 0.6)
 
-plot.new()
-plot(fit, hang=-1)
+plot(fit, hang=-1, cex = 0.75)
 groups <- cutree(fit, k=6)
 rect.hclust(fit, k=6, border="red")
 
-library(fpc)   
-d <- dist(t(dtmss), method="euclidian")   
-kfit <- kmeans(d, 2)   
-clusplot(as.matrix(d), kfit$cluster, color=T, shade=T, labels=2, lines=0)
+library(fpc)
+cluster_amount <- 3
+d <- dist(t(dtmss), method="euclidian")
+kfit <- kmeans(d, cluster_amount)
+clusplot(as.matrix(d), kfit$cluster, color=T,
+         shade=T, labels=cluster_amount, lines=0)
 
 # ------------------------------------------------------------------------
 # ----- KLASYFIKACJA TEKSTÓW ---------------------------------------------

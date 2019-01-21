@@ -11,7 +11,7 @@ w roku akademickim 2018/2019.
 	<th colspan=4 rowspan=1>PRACE DOMOWE</th>
 	<th colspan=1 rowspan=2>KOLOKWIUM</th>
 	<th colspan=1 rowspan=2>SUMA</th>
-	<th colspan=1 rowspan=3>PROCENT (obecny max. 53 pkt)</th>
+	<th colspan=1 rowspan=3>PROCENT</th>
 	<th colspan=1 rowspan=3>OCENA</th>
 </tr>
 <tr>
@@ -75,7 +75,7 @@ w roku akademickim 2018/2019.
 	<td>-</td>
 	<td>15</td>
 	<td>44.2</td>
-	<td>83%</td>
-	<td>4.5</td>
+	<td>74%</td>
+	<td>4.0</td>
 </tr>
 </table>
