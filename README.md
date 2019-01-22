@@ -94,7 +94,7 @@ w roku akademickim 2018/2019.
 	<tr>
 		<th>PD.4 Multim.</th>
 		<th>7 pkt</th>
-		<td>-</td>
+		<td>7</td>
 	</tr>
 	<tr>
 		<th colspan=2 rowspan=1>KOLOKWIUM</th>
@@ -104,14 +104,14 @@ w roku akademickim 2018/2019.
 	<tr>
 		<th colspan=2 rowspan=1>SUMA</th>
 		<th>60 pkt</th>
-		<td>44.2</td>
+		<td>51.2</td>
 	</tr>
 	<tr>
 		<th colspan=3 rowspan=1>PROCENT</th>
-		<td>74%</td>
+		<td>85%</td>
 	</tr>
 	<tr>
 		<th colspan=3 rowspan=1>OCENA</th>
-		<td>4.0</td>
+		<td>4.5</td>
 	</tr>
 </table>
