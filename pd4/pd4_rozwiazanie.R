@@ -76,11 +76,15 @@ preprocessing <- function() {
   
   comments <- tm_map(comments, removeWords,
                      c("feff", "www", "com", "amp"))
-
+  
   #comments <- tm_map(comments, stemDocument)
   comments <- tm_map(comments, stripWhitespace)
   comments <- tm_map(comments, PlainTextDocument)  
 }
+
+tmpComments <- tm_map(comments, stemDocument)
+comments[[1]]$content[113]
+tmpComments[[1]]$content[113]
 
 comments <- preprocessing()
 
@@ -231,7 +235,7 @@ as.character((db_corpus_clean[[341]]))
 #install.packages("SnowballC")
 library(SnowballC)
 
-db_corpus_clean <- tm_map(db_corpus_clean, stemDocument)
+#db_corpus_clean <- tm_map(db_corpus_clean, stemDocument)
 db_corpus_clean <- tm_map(db_corpus_clean, stripWhitespace)
 as.character(db_corpus_clean[[341]])
 
@@ -240,11 +244,14 @@ as.character(db_corpus_clean[[341]])
 
 db_dtm <- DocumentTermMatrix(db_corpus_clean)
 
-.75 * 1956
-.25 * 1956
+nrow(db_dtm)
+.75 * nrow(db_dtm)
+.25 * nrow(db_dtm)
 
 db_dtm_train <- db_dtm[1:1467, ]
-db_dtm_test <- db_dtm[1468:1956, ]
+db_dtm_test <- db_dtm[1467:1956, ]
+db_train_labels <- db[1:1467, ]$CLASS
+db_test_labels <- db[1467:1956, ]$CLASS
 
 prop.table(table(db_train_labels))
 prop.table(table(db_test_labels))
@@ -289,11 +296,11 @@ library(stringr)
 #get_sentiments("nrc")
 
 comments_words <- data_frame(file = paste0(modifiedPath, 
-                                         c("/Youtube01-Psy.csv",
-                                           "/Youtube02-KatyPerry.csv",
-                                           "/Youtube03-LMFAO.csv",
-                                           "/Youtube04-Eminem.csv",
-                                           "/Youtube05-Shakira.csv"))) %>%
+                                           c("/Youtube01-Psy.csv",
+                                             "/Youtube02-KatyPerry.csv",
+                                             "/Youtube03-LMFAO.csv",
+                                             "/Youtube04-Eminem.csv",
+                                             "/Youtube05-Shakira.csv"))) %>%
   mutate(text = map(file, read_lines))
 comments_words
 
@@ -303,11 +310,12 @@ comments_words <- comments_words %>%
          text != "") %>%
   mutate(line_number = 1:n(),
          file = str_sub(basename(file), 1, -5))
+
 comments_words$file <- forcats::fct_relevel(comments_words$file, c("Youtube01-Psy",
-                                                               "Youtube02-KatyPerry",
-                                                               "Youtube03-LMFAO",
-                                                               "Youtube04-Eminem",
-                                                               "Youtube05-Shakira"))
+                                                                   "Youtube02-KatyPerry",
+                                                                   "Youtube03-LMFAO",
+                                                                   "Youtube04-Eminem",
+                                                                   "Youtube05-Shakira"))
 comments_words <- comments_words %>%
   unnest_tokens(word, text) %>%
   filter(!str_detect(word, "[0-9]"),
@@ -320,6 +328,9 @@ comments_words <- comments_words %>%
          !str_detect(word, "[a-z]_"),
          !str_detect(word, ":"))
 comments_words
+
+#comments_words$word <- stemDocument(comments_words$word)
+#comments_words
 
 comments_words %>%
   inner_join(get_sentiments("nrc")) %>%
@@ -339,6 +350,97 @@ comments_words %>%
 
 library(reshape2)
 comments_words %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("red", "darkgreen"), max.words = 100)
+
+# ------------------------------------------------------------------------
+
+#install.packages("udpipe")
+library(udpipe)
+udmodel <- udpipe_download_model(language="english")
+udmodel
+
+lemma <- udpipe(c(comments[[1]]$content, comments[[2]]$content,
+                  comments[[3]]$content, comments[[4]]$content,
+                  comments[[5]]$content), object = udmodel)
+
+index <- grep("update", lemma$token)[1]
+c(lemma$token[index], lemma$lemma[index])
+
+index <- grep("everyone", lemma$token)[1]
+c(lemma$token[index], lemma$lemma[index])
+
+index <- grep("please", lemma$token)[1]
+c(lemma$token[index], lemma$lemma[index])
+
+index <- grep("subscribe", lemma$token)[1]
+c(lemma$token[index], lemma$lemma[index])
+
+udpipe("learn learned learning learns learner",
+       object = udmodel)[9:10]
+
+data.frame("word" = lemma[[10]]) %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("red", "darkgreen"), max.words = 100)
+
+# ------------------------------------------------------------------------
+
+spam <- db[db$CLASS == "spam", ]
+notspam <- db[db$CLASS == "not-spam", ]
+
+spam_corpus <- VCorpus(VectorSource(spam$CONTENT))
+notspam_corpus <- VCorpus(VectorSource(notspam$CONTENT))
+
+spam_corpus_clean <- tm_map(spam_corpus, content_transformer(tolower))
+spam_corpus_clean <- tm_map(spam_corpus_clean, removeNumbers)
+spam_corpus_clean <- tm_map(spam_corpus_clean, removeWords, stopwords("en"))
+spam_corpus_clean <- tm_map(spam_corpus_clean, removePunctuation)
+spam_corpus_clean <- tm_map(spam_corpus_clean, stripWhitespace)
+
+notspam_corpus_clean <- tm_map(notspam_corpus, content_transformer(tolower))
+notspam_corpus_clean <- tm_map(notspam_corpus_clean, removeNumbers)
+notspam_corpus_clean <- tm_map(notspam_corpus_clean, removeWords, stopwords("en"))
+notspam_corpus_clean <- tm_map(notspam_corpus_clean, removePunctuation)
+notspam_corpus_clean <- tm_map(notspam_corpus_clean, stripWhitespace)
+
+spam_dtm <- DocumentTermMatrix(spam_corpus_clean)
+notspam_dtm <- DocumentTermMatrix(notspam_corpus_clean)
+
+spam_dtm
+notspam_dtm
+
+#findFreqTerms(spam_dtm, lowfreq=125)
+#findFreqTerms(notspam_dtm, lowfreq=125)
+
+spam_freq <- sort(colSums(as.matrix(spam_dtm)), decreasing=TRUE)
+notspam_freq <- sort(colSums(as.matrix(notspam_dtm)), decreasing=TRUE)
+
+spam_wf <- data.frame(word=names(spam_freq), freq=spam_freq)
+notspam_wf <- data.frame(word=names(notspam_freq), freq=notspam_freq)
+
+head(spam_wf, 5)[2]
+head(notspam_wf, 5)[2]
+
+wordcloud(names(spam_freq), spam_freq, min.freq=50,
+          scale=c(5, .1), colors=brewer.pal(6, "Dark2"))
+
+wordcloud(names(notspam_freq), notspam_freq, min.freq=50,
+          scale=c(5, .1), colors=brewer.pal(6, "Dark2"))
+
+spam_lemma <- udpipe(spam$CONTENT, object = udmodel)
+notspam_lemma <- udpipe(notspam$CONTENT, object = udmodel)
+
+data.frame("word" = spam_lemma[[10]]) %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("red", "darkgreen"), max.words = 100)
+
+data.frame("word" = notspam_lemma[[10]]) %>%
   inner_join(get_sentiments("bing")) %>%
   count(word, sentiment, sort = TRUE) %>%
   acast(word ~ sentiment, value.var = "n", fill = 0) %>%
